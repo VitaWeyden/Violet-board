@@ -100,7 +100,7 @@
 
         {{-- Product grid --}}
         <div class="row g-3">
-            @foreach ($products as $product)
+            @forelse ($products as $product)
                 <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                     <a href="{{ route('product.show', $product->id) }}" class="text-decoration-none text-dark d-block h-100">
                         <div class="shop-product-card">
@@ -129,7 +129,18 @@
                         </div>
                     </a>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-12 text-center py-5">
+                    <div style="color:var(--color-text-muted);font-size:3rem;margin-bottom:16px">🎲</div>
+                    <h4 style="color:var(--color-primary);font-weight:600;margin-bottom:8px">
+                        Zatiaľ žiadne obľúbené produkty
+                    </h4>
+                    <p style="color:var(--color-text-muted);margin-bottom:24px">
+                        Pridajte si produkty medzi obľúbené kliknutím na ❤️ pri produkte.
+                    </p>
+                    <a href="/shop" class="btn btn-primary px-5">Prejsť do obchodu</a>
+                </div>
+            @endforelse
         </div>
 
         <div class="pagination-container mt-4">

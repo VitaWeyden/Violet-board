@@ -12,16 +12,17 @@
 <body>
     @include('partials.header')
 
-    <div class="container mt-5 pt-5 cart-container" style="margin-top: 120px !important;">
+    <div class="container cart-container" style="margin-top: 24px;">
         @php $cart = session('cart', []); @endphp
 
         <div class="row">
             <div class="col-md-8">
-                <h3 class="mb-4 fw-semibold">Košík
-                    <span class="badge rounded-pill ms-2" style="background:var(--color-primary);font-size:0.9rem;">
+                <h2 style="font-family:var(--font-body);font-size:2rem;font-weight:600;color:var(--color-primary-dark);padding-bottom:10px;margin-bottom:20px;border-bottom:2px solid var(--color-primary);display:flex;align-items:center;justify-content:center;gap:10px;">
+                    Košík
+                    <span class="badge rounded-pill" style="background:var(--color-primary);font-size:0.9rem;">
                         {{ count($cart) }}
                     </span>
-                </h3>
+                </h2>
 
                 @forelse ($cart as $id => $item)
                     {{-- Flowbite card style cart item --}}
@@ -67,9 +68,15 @@
                         </form>
                     </div>
                 @empty
-                    <div class="text-center py-5 text-muted">
-                        <p class="fs-5">Košík je prázdny.</p>
-                        <a href="/shop" class="btn btn-primary mt-2">Prejsť do obchodu</a>
+                    <div class="text-center py-5">
+                        <div style="font-size:3rem;margin-bottom:16px">🛒</div>
+                        <h4 style="color:var(--color-primary);font-weight:600;margin-bottom:8px">
+                            Váš košík je prázdny
+                        </h4>
+                        <p style="color:var(--color-text-muted);margin-bottom:24px">
+                            Pridajte produkty do košíka a nakupujte u nás.
+                        </p>
+                        <a href="/shop" class="btn btn-primary px-5">Prejsť do obchodu</a>
                     </div>
                 @endforelse
             </div>
@@ -86,6 +93,9 @@
                     <button onclick="checkCart()" class="btn btn-primary w-100 mt-2">
                         Vybrať spôsob doručenia
                     </button>
+                    <a href="/shop" class="btn w-100 mt-2" style="background:var(--color-primary-light);color:var(--color-primary);border-radius:var(--radius-full);font-weight:500;">
+                        ← Späť nakupovať
+                    </a>
                 </div>
             </div>
         </div>

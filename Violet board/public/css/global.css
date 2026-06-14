@@ -703,7 +703,7 @@ select:focus {
 
     font-weight: 700;
 
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 
     margin-bottom: 20px;
 
@@ -726,7 +726,7 @@ select:focus {
 
     width: 250px;
 
-    height: 3px;
+    height: 2px;
 
     background: var(--color-primary);
 
