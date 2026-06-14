@@ -606,11 +606,17 @@ select:focus {
 
     width: 100%;
 
-    padding: 10px;
+    height: var(--footer-height);
 
-    color: rgba(255,255,255,0.85);
+    padding: 0 24px;
+
+    color: rgba(255,255,255,0.9);
+
+    font-size: 0.85rem;
 
     z-index: 150;
+
+    gap: 16px;
 }
 
 .footer a {
@@ -1040,4 +1046,60 @@ select:focus {
     background: var(--color-bg);
     border-color: var(--color-border);
     opacity: 0.6;
+}
+
+/* ── Navbar action buttons (right side) ──────────────────── */
+.btn-navbar-action {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    transition: .2s ease;
+    white-space: nowrap;
+}
+
+.btn-navbar-ghost {
+    background: rgba(255,255,255,0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+.btn-navbar-ghost:hover {
+    background: rgba(255,255,255,0.35);
+    color: #ffffff;
+}
+
+.btn-navbar-danger {
+    background: rgba(220,38,38,0.15);
+    color: #ffffff;
+    border: 1px solid rgba(220,38,38,0.4);
+}
+
+.btn-navbar-danger:hover {
+    background: rgba(220,38,38,0.3);
+    color: #ffffff;
+}
+
+/* ── Navbar icon buttons (heart, cart) ───────────────────── */
+.navbar-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #ffffff;
+    text-decoration: none;
+    transition: .2s ease;
+    flex-shrink: 0;
+}
+
+.navbar-icon-btn:hover {
+    background: rgba(255,255,255,0.35);
+    color: #ffffff;
 }
