@@ -190,7 +190,7 @@ a:hover {
 
     height: 42px;
 
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-teal-light);
 
     border-radius: var(--radius-full);
 
@@ -691,11 +691,36 @@ select:focus {
 
     font-size: var(--text-xl);
 
-    font-weight: 600;
+    font-weight: 700;
 
-    color: var(--color-primary-dark);
+    color: var(--color-primary);
 
     margin-bottom: 20px;
+
+    padding-bottom: 12px;
+
+    position: relative;
+}
+
+.carousel-header::after {
+
+    content: '';
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 250px;
+
+    height: 3px;
+
+    background: var(--color-primary);
+
+    border-radius: 2px;
 }
 
 .carousel-content {
@@ -754,7 +779,7 @@ select:focus {
 
     border-radius: 50%;
 
-    background: var(--color-teal);
+    background: var(--color-primary);
 
     border: none;
 
@@ -767,7 +792,7 @@ select:focus {
 
 .arrow-section:hover {
 
-    background: var(--color-teal-dark);
+    background: var(--color-teal);
 
     box-shadow: var(--shadow-md);
 
@@ -915,14 +940,6 @@ select:focus {
     color: #000000 !important;
 }
 
-.carousel-header {
-    color: #000000 !important;
-}
-
-.category-title {
-    color: #000000 !important;
-}
-
 .product-name {
     color: #000000 !important;
 }
@@ -977,4 +994,50 @@ select:focus {
 .sidebar-toggle.collapsed {
 
     left: 0;
+}
+
+/* ── Pagination ───────────────────────────────────────────── */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.pagination {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.page-item .page-link {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm) !important;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    padding: 6px 14px;
+    transition: .2s ease;
+    background: white;
+}
+
+.page-item .page-link:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-color: var(--color-primary-dark);
+    color: white !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-item.disabled .page-link {
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+    border-color: var(--color-border);
+    opacity: 0.6;
 }

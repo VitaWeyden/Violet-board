@@ -7,26 +7,59 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <style>
+        /* Smaller product cards specific to shop page */
+        .shop-product-card {
+            background: white;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 2px 8px rgba(109,40,217,0.08);
+            overflow: hidden;
+            transition: .25s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .shop-product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(109,40,217,0.14);
+            border-color: var(--color-teal);
+        }
+        .shop-product-card .product-image {
+            height: 120px;
+        }
+        .shop-product-card .product-details {
+            padding: 10px;
+            margin: 8px;
+            font-size: 0.8rem;
+        }
+        .shop-product-card h5 {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
 
 <body>
     @include('partials.header')
     @include('partials.sidebar')
 
-    <main class="main-content">
+    {{-- Toggle button – shop only --}}
+    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#9664;</button>
+
+    <main class="main-content" id="mainContent">
 
         <div class="category-title">{{ $categoryTitle ?? 'Shop' }}</div>
 
         {{-- Sort & Filter --}}
         <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div class="relative">
+            <div>
                 <button id="sortBtn" data-dropdown-toggle="sortMenu"
                     class="btn btn-outline-secondary dropdown-toggle">
                     Zoradiť
                 </button>
-                <div id="sortMenu" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-44">
-                    <ul class="py-2 text-sm text-gray-700">
+                <div id="sortMenu" class="z-10 hidden bg-white rounded-lg shadow-lg w-44">
+                    <ul class="py-2 text-sm">
                         <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}" class="block px-4 py-2 hover:bg-purple-50">A–Z</a></li>
                         <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}" class="block px-4 py-2 hover:bg-purple-50">Z–A</a></li>
                         <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" class="block px-4 py-2 hover:bg-purple-50">Cena vzostupne</a></li>
@@ -35,12 +68,12 @@
                 </div>
             </div>
 
-            <div class="relative">
+            <div>
                 <button id="filterBtn" data-dropdown-toggle="filterMenu"
                     class="btn btn-outline-secondary dropdown-toggle">
                     Filter
                 </button>
-                <div id="filterMenu" class="z-10 hidden bg-white rounded-lg shadow-lg p-4" style="min-width: 260px;">
+                <div id="filterMenu" class="z-10 hidden bg-white rounded-lg shadow-lg p-4" style="min-width:260px">
                     <form method="GET" action="{{ url()->current() }}">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Cena od:</label>
@@ -63,15 +96,14 @@
                     </form>
                 </div>
             </div>
-
         </div>
 
         {{-- Product grid --}}
-        <div class="row">
+        <div class="row g-3">
             @foreach ($products as $product)
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <a href="{{ route('product.show', $product->id) }}" class="text-decoration-none text-dark">
-                        <div class="product-card">
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <a href="{{ route('product.show', $product->id) }}" class="text-decoration-none text-dark d-block h-100">
+                        <div class="shop-product-card">
                             <form action="{{ route('product.favorite', $product->id) }}" method="POST">
                                 @csrf
                                 <button class="heart-icon" type="submit">❤️</button>
@@ -81,17 +113,17 @@
                             </div>
                             <div class="product-details">
                                 <h5>{{ $product->name }}</h5>
-                                <p>
+                                <p class="mb-1">
                                     @if($product->is_discounted && $product->discounted_price)
                                         <span class="text-decoration-line-through text-muted">{{ number_format($product->price, 2) }}€</span>
-                                        <span class="text-success fw-bold ms-2">{{ number_format($product->discounted_price, 2) }}€</span>
+                                        <span class="text-success fw-bold ms-1">{{ number_format($product->discounted_price, 2) }}€</span>
                                     @else
                                         <span>{{ number_format($product->price, 2) }}€</span>
                                     @endif
                                 </p>
                                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                                     @csrf
-                                    <button class="btn btn-primary w-100" type="submit">Pridať do košíka</button>
+                                    <button class="btn btn-primary w-100 btn-sm" type="submit">Pridať do košíka</button>
                                 </form>
                             </div>
                         </div>
@@ -100,13 +132,26 @@
             @endforeach
         </div>
 
-        <div class="pagination-container">
+        <div class="pagination-container mt-4">
             {{ $products->links('pagination::bootstrap-5') }}
         </div>
 
     </main>
 
     @include('partials.footer')
+
+    <script>
+        const sidebar     = document.getElementById('sidebar');
+        const toggle      = document.getElementById('sidebarToggle');
+        const mainContent = document.getElementById('mainContent');
+
+        toggle.addEventListener('click', () => {
+            const collapsed = sidebar.classList.toggle('collapsed');
+            toggle.classList.toggle('collapsed', collapsed);
+            toggle.innerHTML = collapsed ? '&#9654;' : '&#9664;';
+            mainContent.classList.toggle('expanded', collapsed);
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

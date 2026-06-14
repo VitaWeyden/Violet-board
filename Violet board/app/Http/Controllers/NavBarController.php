@@ -52,7 +52,7 @@ class NavBarController extends Controller
                 break;
         }
 
-        $products = $products->paginate(12)->appends($request->query());
+        $products = $products->paginate(42)->appends($request->query());
 
         return view('shop', [
             'products' => $products,
@@ -107,7 +107,7 @@ class NavBarController extends Controller
                 break;
         }
 
-        $products = $products->paginate(12)->appends($request->query());
+        $products = $products->paginate(42)->appends($request->query());
 
         return view('shop', [
             'products' => $products,
@@ -161,7 +161,7 @@ class NavBarController extends Controller
                 break;
         }
 
-        $products = $products->paginate(12)->appends($request->query());
+        $products = $products->paginate(42)->appends($request->query());
 
         return view('shop', [
             'products' => $products,
@@ -215,7 +215,7 @@ class NavBarController extends Controller
                 break;
         }
 
-        $products = $products->paginate(12)->appends($request->query());
+        $products = $products->paginate(42)->appends($request->query());
 
         return view('shop', [
             'products' => $products,

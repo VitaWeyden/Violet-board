@@ -72,7 +72,7 @@ class SideBarController extends Controller
                 break;
         }
 
-        $products = $productsQuery->paginate(12)->appends($request->query());
+        $products = $productsQuery->paginate(42)->appends($request->query());
 
         return view('shop', [
             'products' => $products,

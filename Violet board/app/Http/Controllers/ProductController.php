@@ -76,7 +76,7 @@ class ProductController extends Controller
             $products = $products->sortByDesc('effective_price')->values();
         }
 
-        $perPage = 12;
+        $perPage = 42;
         $page = $request->input('page', 1);
         $pagedItems = $products->slice(($page - 1) * $perPage, $perPage)->values();
         $paginated = new \Illuminate\Pagination\LengthAwarePaginator(

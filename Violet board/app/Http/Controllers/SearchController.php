@@ -49,7 +49,7 @@ class SearchController extends Controller
             $productsCollection = $productsCollection->sortBy('name')->values();
         }
 
-        $perPage = 12;
+        $perPage = 42;
         $currentPage = $request->input('page', 1);
         $currentItems = $productsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
