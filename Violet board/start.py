@@ -34,6 +34,10 @@ run("chmod -R 775 storage bootstrap/cache 2>/dev/null || true", check=False)
 print("\n[..] Building and starting Docker containers...")
 run("docker compose up -d --build")
 
+# Copy app code into named volume (needed for Windows performance)
+print("[..] Syncing app code into container volume...")
+run("docker compose exec app cp -r /var/www/. /var/www/ 2>/dev/null || true", check=False)
+
 # Wait for DB
 print("[..] Waiting for the database...")
 time.sleep(10)
@@ -55,6 +59,13 @@ print("[..] Running migrations and seeders...")
 run("docker compose exec app php artisan migrate --force", check=False)
 run("docker compose exec app php artisan db:seed --force", check=False)
 print("[OK] Database ready")
+
+# Cache config, routes and views for better performance
+print("[..] Caching config, routes and views...")
+run("docker compose exec app php artisan config:cache", check=False)
+run("docker compose exec app php artisan route:cache", check=False)
+run("docker compose exec app php artisan view:cache", check=False)
+print("[OK] Cache ready")
 
 # Storage link
 run("docker compose exec app php artisan storage:link", check=False)
