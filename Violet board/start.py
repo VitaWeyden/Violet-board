@@ -12,6 +12,16 @@ print("=" * 50)
 print("  Violet Board – Starting up")
 print("=" * 50)
 
+# Generate APP_KEY in Python before Docker starts — no container needed
+import secrets, base64
+if os.path.exists(".env"):
+    env_content = open(".env").read()
+    if "APP_KEY=base64" not in env_content:
+        key = "base64:" + base64.b64encode(secrets.token_bytes(32)).decode()
+        env_content = env_content.replace("APP_KEY=", f"APP_KEY={key}")
+        open(".env", "w").write(env_content)
+        print("[OK] APP_KEY generated")
+
 # Copy nginx config
 os.makedirs("docker", exist_ok=True)
 if os.path.exists("nginx.conf") and not os.path.exists("docker/nginx.conf"):
@@ -34,9 +44,9 @@ run("chmod -R 775 storage bootstrap/cache 2>/dev/null || true", check=False)
 print("\n[..] Building and starting Docker containers...")
 run("docker compose up -d --build")
 
-# Copy app code into named volume (needed for Windows performance)
-print("[..] Syncing app code into container volume...")
-run("docker compose exec app cp -r /var/www/. /var/www/ 2>/dev/null || true", check=False)
+# Run composer install inside container — bind mount overwrites vendor/ from the image
+print("[..] Installing Composer dependencies...")
+run("docker compose exec app composer install --no-dev --optimize-autoloader", check=False)
 
 # Wait for DB
 print("[..] Waiting for the database...")
@@ -47,16 +57,9 @@ print("[..] Fixing storage permissions...")
 run("docker compose exec app chown -R www-data:www-data storage bootstrap/cache", check=False)
 run("docker compose exec app chmod -R 775 storage bootstrap/cache", check=False)
 
-# Generate APP_KEY if missing
-env_content = open(".env").read() if os.path.exists(".env") else ""
-if "APP_KEY=" in env_content and "APP_KEY=base64" not in env_content:
-    print("[..] Generating APP_KEY...")
-    run("docker compose exec app php artisan key:generate --force", check=False)
-    print("[OK] APP_KEY generated")
-
 # Migrate and seed
 print("[..] Running migrations and seeders...")
-run("docker compose exec app php artisan migrate --force", check=False)
+run("docker compose exec app php artisan migrate:fresh --force", check=False)
 run("docker compose exec app php artisan db:seed --force", check=False)
 print("[OK] Database ready")
 

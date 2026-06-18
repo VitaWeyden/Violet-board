@@ -21,26 +21,40 @@ Before you start, make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/violetboard.git
-cd violetboard
+git clone https://github.com/VitaWeyden/Violet-board.git
+cd Violet-board
 ```
 
 ### 2. Set up the environment file
 
-Copy the example environment file:
+Create a new file called `.env` in the root of the project and copy the entire contents of `.env.example` into it.
 
+**On Windows:**
 ```bash
-cp .env.example .env
+copy .env.example .env
 ```
 
-> The default values in `.env.example` work out of the box with Docker — you don't need to change anything to run the project locally.
+**On Mac/Linux:**
+```bash
+cat .env.example > .env
+```
+
+> The default values in `.env.example` work out of the box with Docker, you don't need to change anything to run the project locally.
 
 ### 3. Start the application
 
 > ⚠️ **Make sure Docker Desktop is open before running this script.** The script will not work if Docker Desktop is closed.
 
+Make sure you are inside the `Violet-board` folder (where `start.py` is located), then run:
+
+**On Windows:**
 ```bash
 python start.py
+```
+
+**On Mac/Linux:**
+```bash
+python3 start.py
 ```
 
 This will automatically:
@@ -49,7 +63,7 @@ This will automatically:
 - Cache config, routes and views for better performance
 - Open the app in your browser at [http://localhost:8000](http://localhost:8000)
 
-> ⏳ **The first run will take a few minutes** — Docker needs to download and build all the images. Subsequent starts will be much faster.
+> ⏳ **The first run will take a few minutes**, Docker needs to download and build all the images. Subsequent starts will be much faster.
 
 ---
 
@@ -58,13 +72,25 @@ This will automatically:
 Once the project has been set up with `start.py`, you can use these scripts for everyday use:
 
 **Start the app** (after Docker is already built):
+
+Windows:
 ```bash
 python serve.py
 ```
+Mac/Linux:
+```bash
+python3 serve.py
+```
 
 **Stop the app and remove all data** (full reset):
+
+Windows:
 ```bash
 python stop.py
+```
+Mac/Linux:
+```bash
+python3 stop.py
 ```
 
 ---

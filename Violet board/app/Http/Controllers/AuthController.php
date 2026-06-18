@@ -25,7 +25,7 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('dakujeme', ['source' => 'registracia']);
+        return redirect('/prihlasenie')->with('success', 'Registrácia prebehla úspešne! Prihláste sa.');
     }
 
 
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
             session(['cart' => $dbItems]);
 
-            return redirect()->route('dakujeme', ['source' => 'login']);
+            return redirect('/')->with('success', 'Prihlásenie prebehlo úspešne!');
         }
 
         return back()->withErrors([
@@ -76,8 +76,6 @@ class AuthController extends Controller
         $user = auth()->user();
 
         auth()->logout();
-
-        \DB::table('sessions')->where('user_id', $user->id)->delete();
 
         $user->delete();
 
