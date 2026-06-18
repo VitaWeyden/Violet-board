@@ -13,7 +13,7 @@
     @include('partials.header')
     @include('partials.sidebar')
 
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
         @foreach ($sections as $section)
             <div class="carousel-section">
                 <h3 class="carousel-header">{{ $section }}</h3>
@@ -46,5 +46,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script src="{{ asset('js/home-carousel.js') }}"></script>
+    <script src="{{ asset('js/sidebar-toggle.js') }}"></script>
 </body>
 </html>

@@ -44,9 +44,6 @@
     @include('partials.header')
     @include('partials.sidebar')
 
-    {{-- Toggle button – shop only --}}
-    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#9664;</button>
-
     <main class="main-content" id="mainContent">
 
         <div class="category-title">{{ $categoryTitle ?? 'Shop' }}</div>
@@ -167,18 +164,7 @@
 
     @include('partials.footer')
 
-    <script>
-        const sidebar     = document.getElementById('sidebar');
-        const toggle      = document.getElementById('sidebarToggle');
-        const mainContent = document.getElementById('mainContent');
-
-        toggle.addEventListener('click', () => {
-            const collapsed = sidebar.classList.toggle('collapsed');
-            toggle.classList.toggle('collapsed', collapsed);
-            toggle.innerHTML = collapsed ? '&#9654;' : '&#9664;';
-            mainContent.classList.toggle('expanded', collapsed);
-        });
-    </script>
+    <script src="{{ asset('js/sidebar-toggle.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
