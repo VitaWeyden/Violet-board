@@ -2,47 +2,80 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
     protected $fillable = [
+        'label_id',
+        'discount_id',
         'name',
         'description',
         'price',
-        'discounted_price',
-        'is_discounted',
-        'is_best_seller',
-        'is_new',
         'min_age',
         'min_players',
         'max_players',
         'in_stock',
     ];
 
-    public function images()
+    protected function casts(): array
+    {
+        return [
+            'price'      => 'decimal:2',
+            'in_stock'   => 'boolean',
+            'deleted_at' => 'datetime',
+        ];
+    }
+
+    public function label(): BelongsTo
+    {
+        return $this->belongsTo(Label::class);
+    }
+
+    public function discount(): BelongsTo
+    {
+        return $this->belongsTo(Discount::class);
+    }
+
+    public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class);
     }
 
-
-    public function getMainImagePath()
+    public function categories(): BelongsToMany
     {
-        return asset('Pictures/' . Str::slug($this->name) . '1.jpg');
+        return $this->belongsToMany(Category::class, 'category_products')
+                    ->withPivot('created_at');
     }
 
-
-    public function categories()
+    public function cartItems(): HasMany
     {
-        return $this->belongsToMany(Category::class, 'category_product');
+        return $this->hasMany(CartItem::class);
     }
 
-    public function scopeDiscounted($query)
+    public function orderProducts(): HasMany
     {
-        return $query->whereNotNull('discounted_price');
+        return $this->hasMany(OrderProduct::class);
     }
 
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_favorites')
+                    ->withPivot('created_at');
+    }
+
+    public function effectivePrice(): float
+    {
+        if ($this->discount && $this->discount->isActive()) {
+            return $this->discount->calculatePrice((float) $this->price);
+        }
+
+        return (float) $this->price;
+    }
 }

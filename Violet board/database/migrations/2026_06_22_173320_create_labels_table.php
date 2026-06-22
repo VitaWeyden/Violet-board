@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->boolean('in_stock')->default(true);
+        Schema::create('labels', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 50)->unique();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('in_stock');
-        });
+        Schema::dropIfExists('labels');
     }
 };

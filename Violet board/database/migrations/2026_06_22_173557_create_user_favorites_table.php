@@ -8,17 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_images', function (Blueprint $table) {
-            $table->id();
+        Schema::create('user_favorites', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->text('url');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->primary(['user_id', 'product_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_images');
+        Schema::dropIfExists('user_favorites');
     }
 };

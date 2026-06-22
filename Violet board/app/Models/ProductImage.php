@@ -3,14 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductImage extends Model
 {
-    protected $fillable = ['product_id', 'filename'];
+    use SoftDeletes;
 
-    public function product()
+    protected $fillable = [
+        'product_id',
+        'url',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'deleted_at' => 'datetime',
+        ];
+    }
+
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }

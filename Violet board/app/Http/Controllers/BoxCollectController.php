@@ -10,7 +10,7 @@ class BoxCollectController extends Controller
 {
     public function showForm()
     {
-        $locations = BoxCollectLocation::orderBy('name')->get();
+        $locations = collect(config('box_collect_locations'))->sortBy('name');
         return view('doprava', compact('locations') + ['mode' => 'box']);
     }
 }

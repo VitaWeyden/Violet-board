@@ -8,16 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('category_product', function (Blueprint $table) {
-            $table->id();
+        Schema::create('category_products', function (Blueprint $table) {
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->primary(['product_id', 'category_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('category_product');
+        Schema::dropIfExists('category_products');
     }
 };
