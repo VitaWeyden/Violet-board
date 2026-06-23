@@ -1,12 +1,32 @@
-Hello, this is an ongoing project! Both the frontend and backend are still a work in progress.
+# Violet Board
 
----
+> A simulated online board game webshop built with Laravel 12, PostgreSQL, and Docker.
 
-Violet Board is a simulated online webshop for board games, built with Laravel 12, PostgreSQL and Docker.
+## About
 
----
+Violet Board is an ongoing project that originated as a university project at the Faculty of Informatics and Information Technologies in Bratislava.
 
-The project is being worked on by:
+The project aims to simulate an e-commerce platform for board games. Both the frontend and backend are still under active development, and new features are being added continuously.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 12 / PHP 8.2 |
+| Frontend | Blade, Bootstrap 5, Flowbite |
+| Database | PostgreSQL 15 |
+| Web server | Nginx |
+| Runtime | Docker / PHP-FPM |
+
+## Project Status
+
+🚧 Work in Progress
+
+The application is actively being developed. Features, data models, and user interface elements may change over time.
+
+## Contributors
+
+The project is being developed by:
 - [Zsófia Gergely](https://github.com/VitaWeyden) - Full-Stack Development
 - [Flóra Emma Kaňuchová](https://github.com/knchflora) - Former Contributor in Full-Stack Development
 - [Bálint Janik](https://github.com/balintj4) - UX/UI Testing
@@ -64,7 +84,7 @@ This will automatically:
 
 ---
 
-## Stopping the application
+### 4. Stopping the application
 
 To stop the running containers without deleting data:
 
@@ -77,15 +97,3 @@ To stop and also delete the database volume (full reset):
 ```bash
 docker compose down -v
 ```
-
----
-
-## Tech stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Laravel 12 / PHP 8.2 |
-| Frontend | Blade, Bootstrap 5, Flowbite |
-| Database | PostgreSQL 15 |
-| Web server | Nginx |
-| Runtime | Docker / PHP-FPM |
