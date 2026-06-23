@@ -2,9 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfMeta ? csrfMeta.content : null;
 
-    // Small top-center confirmation toast shown for 3 seconds after a
-    // product is added to the cart. Builds its own markup on first use,
-    // so no extra HTML is needed in any of the blade views.
     let addToCartToastTimer = null;
 
     function showAddToCartToast() {
@@ -18,12 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
                     '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m5 13 4 4L19 7"/>' +
                 '</svg>' +
-                '<span>Pridané do košíka</span>';
+                '<span>Added to cart</span>';
             document.body.appendChild(toast);
         }
 
-        // Restart the fade-in animation even if the toast is already
-        // visible (e.g. the user clicks "add" again quickly).
         toast.classList.remove('show');
         void toast.offsetWidth;
         toast.classList.add('show');
@@ -78,9 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Keeps the header's hover cart preview in sync in real time: the
-    // backend re-renders the partials.cart-preview partial on every
-    // add/update and sends it back as HTML, which we just drop in here.
     function updateCartPreview(data) {
         if (!data || data.cart_preview_html === undefined) return;
         document.querySelectorAll('.navbar-cart-preview').forEach((el) => {

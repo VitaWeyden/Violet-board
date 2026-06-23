@@ -2,85 +2,81 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Product;
 use App\Models\Category;
-
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SideBarController extends Controller
 {
-    public function showCategory(Request $request, $categorySlug)
+    public function showCategory(Request $request, string $slug)
     {
-        $categories = [
-            'strategia' => 'Štrategické hry',
-            'puzzle' => 'Puzzle',
-            'party' => 'Party hry',
-            'vedomostne' => 'Vedomostné hry',
-            'karty' => 'Kartové hry',
-            'rodinne' => 'Rodinné hry',
-            'deti' => 'Pre deti',
-            'pamat' => 'Pamäťové hry'
-        ];
+        // Match slug against slugified English category names
+        // e.g. "strategy-games" matches "Strategy Games"
+        $category = Category::all()->first(
+            fn($cat) => Str::slug($cat->name) === $slug
+        );
 
-        $categoryTitle = $categories[$categorySlug] ?? 'Neznáma kategória';
-        $category = Category::where('slug', $categorySlug)->first();
-
-        if (!$category) {
-            abort(404);
-        }
+        abort_if(!$category, 404);
 
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
-        $sort = $request->input('sort', 'default');
-        $maxAge = $request->input('vekova_kategoria');
-        $players = $request->input('hracov');
+        $sort     = $request->input('sort', 'default');
+        $maxAge   = $request->input('max_age');
+        $players  = $request->input('players');
 
-        $productsQuery = $category->products()->with(['images' => fn($query) => $query->orderBy('filename')]);
-
-        if (!is_null($minPrice)) {
-            $productsQuery->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) >= ?', [$minPrice]);
-        }
-
-        if (!is_null($maxPrice)) {
-            $productsQuery->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) <= ?', [$maxPrice]);
-        }
+        $query = $category->products()
+            ->with(['images', 'discount']);
 
         if (!is_null($maxAge)) {
-            $productsQuery->where('min_age', '<=', $maxAge);
+            $query->where('min_age', '<=', $maxAge);
         }
 
         if (!is_null($players)) {
-            $productsQuery->where('max_players', '>=', $players);
+            $query->where('max_players', '>=', $players);
         }
 
         switch ($sort) {
             case 'price_asc':
-                $productsQuery->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) ASC');
+                $query->orderBy('price', 'asc');
                 break;
             case 'price_desc':
-                $productsQuery->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) DESC');
+                $query->orderBy('price', 'desc');
                 break;
-            case 'asc':
-                $productsQuery->orderBy('name', 'asc');
-                break;
-            case 'desc':
-                $productsQuery->orderBy('name', 'desc');
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
                 break;
             default:
-                $productsQuery->orderBy('name', 'asc');
-                break;
+                $query->orderBy('name', 'asc');
         }
 
-        $products = $productsQuery->paginate(42)->appends($request->query());
+        if (!is_null($minPrice) || !is_null($maxPrice)) {
+            $all = $query->get()->filter(function ($product) use ($minPrice, $maxPrice) {
+                $price = $product->effectivePrice();
+                if ($minPrice !== null && $price < $minPrice) return false;
+                if ($maxPrice !== null && $price > $maxPrice) return false;
+                return true;
+            });
+
+            $perPage  = 30;
+            $page     = $request->input('page', 1);
+            $products = new \Illuminate\Pagination\LengthAwarePaginator(
+                $all->slice(($page - 1) * $perPage, $perPage)->values(),
+                $all->count(),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+        } else {
+            $products = $query->paginate(30)->appends($request->query());
+        }
 
         return view('shop', [
-            'products' => $products,
-            'categoryTitle' => $categoryTitle,
-            'categorySlug' => $categorySlug,
-            'sort' => $sort,
-            'vekova_kategoria' => $maxAge,
-            'hracov' => $players,
+            'products'      => $products,
+            'categoryTitle' => $category->name,
+            'categorySlug'  => $slug,
+            'sort'          => $sort,
+            'max_age'       => $maxAge,
+            'players'       => $players,
         ]);
     }
 }

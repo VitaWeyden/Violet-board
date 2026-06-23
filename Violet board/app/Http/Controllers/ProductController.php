@@ -2,78 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Cart;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductController extends Controller
 {
-    public function show($id)
+    public function show(int $id)
     {
-        $product = Product::with([
-            'images' => function($query) {
-                $query->orderBy('filename');
-            },
-            'categories',
-        ])->findOrFail($id);
+        $product = Product::with(['images', 'categories', 'label', 'discount'])
+            ->findOrFail($id);
 
-        return view('detaily', [
-            'product' => $product,
-            'isInCart' => ProductController::isInCart($product->id),
-            'fromLabel' => request('from_label'),
-            'fromUrl' => request('from_url'),
+        $isFavorite = auth()->check()
+            ? auth()->user()->favorites()->where('product_id', $id)->exists()
+            : in_array($id, session()->get('guest_favorites', []));
+
+        return view('details', [
+            'product'    => $product,
+            'isInCart'   => $this->isInCart($id),
+            'isFavorite' => $isFavorite,
+            'fromLabel'  => request('from_label'),
+            'fromUrl'    => request('from_url'),
         ]);
     }
 
-
-
-    public function index(Request $request, $category = null)
+    public function index(Request $request, ?int $categoryId = null)
     {
-        $sort = $request->query('sort', 'asc');
+        $sort     = $request->query('sort', 'asc');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
-        $vekovaKategoria = $request->query('vekova_kategoria');
-        $pocetHracov = $request->query('hracov');
+        $maxAge   = $request->query('max_age');
+        $players  = $request->query('players');
 
-        $query = Product::query();
+        $query = Product::with(['images', 'discount']);
 
-        if ($category) {
-            $query->where('category', $category);
+        if ($categoryId) {
+            $query->whereHas('categories', fn($q) => $q->where('categories.id', $categoryId));
         }
 
-        if ($vekovaKategoria) {
-            $query->where('min_age', '<=', $vekovaKategoria);
+        if ($maxAge) {
+            $query->where('min_age', '<=', $maxAge);
         }
 
-        if ($pocetHracov) {
-            $query->where('max_players', '>=' ,$pocetHracov);
+        if ($players) {
+            $query->where('max_players', '>=', $players);
         }
 
-        $query->with('images');
-
-        if ($sort === 'desc') {
-            $query->orderBy('name', 'desc');
-        } elseif ($sort === 'asc') {
-            $query->orderBy('name', 'asc');
+        if (in_array($sort, ['asc', 'desc'])) {
+            $query->orderBy('name', $sort);
         }
 
-        $products = $query->get()->filter(function ($product) use ($minPrice, $maxPrice) {
-            $effectivePrice = $product->is_discounted && $product->discounted_price
-                ? $product->discounted_price
-                : $product->price;
-
-            if ($minPrice !== null && $effectivePrice < $minPrice) {
-                return false;
-            }
-            if ($maxPrice !== null && $effectivePrice > $maxPrice) {
-                return false;
-            }
-
-            $product->effective_price = $effectivePrice;
-            return true;
+        $products = $query->get()->map(function ($product) {
+            $product->effective_price = $product->effectivePrice();
+            return $product;
         });
+
+        if ($minPrice !== null) {
+            $products = $products->filter(fn($p) => $p->effective_price >= $minPrice);
+        }
+
+        if ($maxPrice !== null) {
+            $products = $products->filter(fn($p) => $p->effective_price <= $maxPrice);
+        }
 
         if ($sort === 'price_asc') {
             $products = $products->sortBy('effective_price')->values();
@@ -81,11 +72,10 @@ class ProductController extends Controller
             $products = $products->sortByDesc('effective_price')->values();
         }
 
-        $perPage = 42;
-        $page = $request->input('page', 1);
-        $pagedItems = $products->slice(($page - 1) * $perPage, $perPage)->values();
-        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
-            $pagedItems,
+        $perPage  = 30;
+        $page     = $request->input('page', 1);
+        $paginated = new LengthAwarePaginator(
+            $products->slice(($page - 1) * $perPage, $perPage)->values(),
             $products->count(),
             $perPage,
             $page,
@@ -93,73 +83,31 @@ class ProductController extends Controller
         );
 
         return view('shop', [
-            'products' => $paginated,
-            'categoryTitle' => $category ? ucfirst($category) : 'Shop',
-            'sort' => $sort
+            'products'      => $paginated,
+            'categoryTitle' => 'Shop',
+            'sort'          => $sort,
         ]);
     }
 
-
-
-    public function addToCart($id)
+    public function addToCart(int $id)
     {
-        $product = Product::findOrFail($id);
-        $cart = session()->get('cart', []);
-        $price = $product->is_discounted && $product->discounted_price
-            ? $product->discounted_price
-            : $product->price;
+        Product::findOrFail($id);
 
-        if (!Auth::check()) {
-            $cart = session()->get('cart', []);
-            if (isset($cart[$id])) {
-                $cart[$id]['quantity']++;
-            } else {
-                $cart[$id] = [
-                    "name" => $product->name,
-                    "quantity" => 1,
-                    "price" => $price,
-                    "original_price" => $product->price,
-                    "is_discounted" => $product->is_discounted,
-                    "image" => $product->images->first()->filename ?? 'placeholder.jpg'
-                ];
-            }
-            session()->put('cart', $cart);
+        $cart     = $this->getOrCreateCart();
+        $existing = $cart->items()->where('product_id', $id)->first();
+
+        if ($existing) {
+            $existing->increment('quantity');
+            $quantity = $existing->fresh()->quantity;
         } else {
-            $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
-            if ($cart) {
-                $cartItems = json_decode($cart->items, true);
-            } else {
-                $cartItems = [];
-            }
-
-            if (isset($cartItems[$id])) {
-                $cartItems[$id]['quantity']++;
-            } else {
-                $cartItems[$id] = [
-                    'name' => $product->name,
-                    'quantity' => 1,
-                    'price' => $product->is_discounted && $product->discounted_price
-                        ? $product->discounted_price
-                        : $product->price,
-                    'original_price' => $product->price,
-                    'is_discounted' => $product->is_discounted,
-                    'image' => $product->images->first()->filename ?? 'placeholder.jpg'
-                ];
-            }
-
-            \App\Models\Cart::updateOrCreate(
-                ['user_id' => auth()->id()],
-                ['items' => json_encode($cartItems)]
-            );
-
-            session()->put('cart', $cartItems);
+            $cart->items()->create(['product_id' => $id, 'quantity' => 1]);
+            $quantity = 1;
         }
 
         if (request()->wantsJson()) {
-            $finalCart = session('cart', []);
             return response()->json([
-                'quantity' => $finalCart[$id]['quantity'] ?? 1,
-                'cart_count' => collect($finalCart)->sum('quantity'),
+                'quantity'          => $quantity,
+                'cart_count'        => $cart->items()->sum('quantity'),
                 'cart_preview_html' => view('partials.cart-preview')->render(),
             ]);
         }
@@ -167,79 +115,57 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-
-
-    public function toggleFavorite($id)
+    public function removeFromCart(int $id)
     {
-        $product = Product::findOrFail($id);
-        $product->is_favorite = !$product->is_favorite;
-        $product->save();
+        $cart = $this->getOrCreateCart();
+        $cart->items()->where('product_id', $id)->delete();
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'cart_count' => $cart->items()->sum('quantity'),
+            ]);
+        }
 
         return redirect()->back();
     }
 
-
-
-    public function removeFromCart($id)
+    public function updateCartQuantity(Request $request, int $id)
     {
-        $cart = session()->get('cart', []);
-        unset($cart[$id]);
-        session()->put('cart', $cart);
-        $this->saveCartToDatabase();
-        return redirect()->back();
-    }
-
-
-
-    public function updateCartQuantity(Request $request, $id)
-    {
-        $cart = session()->get('cart', []);
+        $cart = $this->getOrCreateCart();
+        $item = $cart->items()->where('product_id', $id)->first();
         $removed = false;
 
-        if (isset($cart[$id])) {
+        if ($item) {
             if ($request->action === 'increase') {
-                $cart[$id]['quantity']++;
+                $item->increment('quantity');
             } elseif ($request->action === 'decrease') {
-                $cart[$id]['quantity']--;
-                if ($cart[$id]['quantity'] <= 0) {
-                    unset($cart[$id]);
-                    $removed = true;
-                }
-            } elseif ($request->action === 'set') {
-                $newQuantity = (int) $request->input('quantity', 1);
-                if ($newQuantity <= 0) {
-                    unset($cart[$id]);
+                if ($item->quantity <= 1) {
+                    $item->delete();
                     $removed = true;
                 } else {
-                    $cart[$id]['quantity'] = $newQuantity;
+                    $item->decrement('quantity');
+                }
+            } elseif ($request->action === 'set') {
+                $newQty = (int) $request->input('quantity', 1);
+                if ($newQty <= 0) {
+                    $item->delete();
+                    $removed = true;
+                } else {
+                    $item->update(['quantity' => $newQty]);
                 }
             }
         }
 
-        session()->put('cart', $cart);
-        $this->saveCartToDatabase();
-
-        if ($request->wantsJson()) {
-            $item = $cart[$id] ?? null;
-            $itemTotalHtml = null;
-
-            if ($item) {
-                if (!empty($item['is_discounted'])) {
-                    $itemTotalHtml = '<div class="text-decoration-line-through text-muted small">'
-                        . number_format($item['original_price'] * $item['quantity'], 2) . ' €</div>'
-                        . '<div class="text-success">'
-                        . number_format($item['price'] * $item['quantity'], 2) . ' €</div>';
-                } else {
-                    $itemTotalHtml = number_format($item['price'] * $item['quantity'], 2) . ' €';
-                }
-            }
+        if (request()->wantsJson()) {
+            $item       = $removed ? null : $item->fresh();
+            $cartItems  = $cart->items()->with('product.discount')->get();
+            $cartTotal  = $cartItems->sum(fn($i) => $i->product->effectivePrice() * $i->quantity);
 
             return response()->json([
-                'removed' => $removed,
-                'quantity' => $item['quantity'] ?? null,
-                'item_total_html' => $itemTotalHtml,
-                'cart_total' => number_format(collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']), 2),
-                'cart_count' => collect($cart)->sum('quantity'),
+                'removed'           => $removed,
+                'quantity'          => $item?->quantity,
+                'cart_total'        => number_format($cartTotal, 2),
+                'cart_count'        => $cartItems->sum('quantity'),
                 'cart_preview_html' => view('partials.cart-preview')->render(),
             ]);
         }
@@ -247,33 +173,46 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-
-
-    private function saveCartToDatabase()
+    public function toggleFavorite(int $id)
     {
+        Product::findOrFail($id);
+
         if (auth()->check()) {
-            \App\Models\Cart::updateOrCreate(
-                ['user_id' => auth()->id()],
-                ['items' => json_encode(session('cart', []))]
-            );
+            auth()->user()->favorites()->toggle($id);
+        } else {
+            $favorites = session()->get('guest_favorites', []);
+
+            if (in_array($id, $favorites)) {
+                $favorites = array_values(array_filter($favorites, fn($fid) => $fid !== $id));
+            } else {
+                $favorites[] = $id;
+            }
+
+            session()->put('guest_favorites', $favorites);
         }
+
+        return redirect()->back();
     }
 
-
-
-    public static function isInCart($productId)
+    private function getOrCreateCart(): Cart
     {
         if (auth()->check()) {
-            $cart = \App\Models\Cart::where('user_id', auth()->id())->first();
-            if ($cart) {
-                $items = json_decode($cart->items, true);
-                return isset($items[$productId]);
-            }
-        } else {
-            $cart = session()->get('cart', []);
-            return isset($cart[$productId]);
+            return Cart::firstOrCreate(['user_id' => auth()->id()]);
         }
 
-        return false;
+        return Cart::firstOrCreate(['session_id' => session()->getId()]);
+    }
+
+    public function isInCart(int $productId): bool
+    {
+        if (auth()->check()) {
+            $cart = Cart::where('user_id', auth()->id())->first();
+        } else {
+            $cart = Cart::where('session_id', session()->getId())->first();
+        }
+
+        if (!$cart) return false;
+
+        return $cart->items()->where('product_id', $productId)->exists();
     }
 }

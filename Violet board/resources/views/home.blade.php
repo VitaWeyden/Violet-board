@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home page</title>
+    <title>Violet Board – Board Game Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
@@ -15,13 +15,15 @@
 
     <main class="main-content" id="mainContent">
         @php
-            $sectionUrls = [
-                'Akcie' => url('/shop/akcie'),
-                'Novinky' => url('/shop/novinky'),
-                'Best sellers' => url('/shop/best-sellers'),
+            $sectionRoutes = [
+                'New Arrivals' => route('shop.new'),
+                'Bestsellers'  => route('shop.bestsellers'),
+                'On Sale'      => route('shop.on-sale'),
             ];
         @endphp
+
         @foreach ($sections as $section)
+            @if ($productsBySection[$section]->isNotEmpty())
             <div class="carousel-section">
                 <h3 class="carousel-header">{{ $section }}</h3>
 
@@ -29,9 +31,10 @@
                     <div class="carousel-view">
                         <div class="carousel-content">
                             @foreach ($productsBySection[$section] as $product)
-                                <a href="{{ route('product.show', ['id' => $product->id]) }}?from_label={{ urlencode($section) }}&from_url={{ urlencode($sectionUrls[$section] ?? url('/shop')) }}" class="product-card text-decoration-none text-dark">
+                                <a href="{{ route('product.show', ['id' => $product->id]) }}?from_label={{ urlencode($section) }}&from_url={{ urlencode($sectionRoutes[$section] ?? url('/shop')) }}"
+                                   class="product-card text-decoration-none text-dark">
                                     <div class="product-image">
-                                        <img src="{{ asset('Pictures/' . $product->images->first()->filename) }}" alt="{{ $product->name }}">
+                                        <img src="{{ $product->images->first()?->url ?? '' }}" alt="{{ $product->name }}">
                                     </div>
                                     <div class="product-name">{{ $product->name }}</div>
                                 </a>
@@ -45,6 +48,7 @@
                     <button class="arrow-section arrow right">&#9654;</button>
                 </div>
             </div>
+            @endif
         @endforeach
     </main>
 

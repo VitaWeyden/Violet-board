@@ -11,7 +11,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             LabelSeeder::class,
-            ProductSeeder::class,
+            ProductSeeder::class, // assigns label_id at the end
+            DiscountSeeder::class, // assigns discount_id after products exist
         ]);
     }
 }

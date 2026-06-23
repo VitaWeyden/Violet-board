@@ -11,9 +11,7 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             'Strategy Games',
-            'Puzzle',
             'Party Games',
-            'Trivia & Knowledge',
             'Card Games',
             'Family Games',
             "Children's Games",

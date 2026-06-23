@@ -2,227 +2,160 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
-
-
+use Illuminate\Http\Request;
 
 class NavBarController extends Controller
 {
-    public function showAkcie(Request $request)
+    public function showOnSale(Request $request)
     {
-        $sort = $request->query('sort', 'default');
+        $sort     = $request->query('sort', 'default');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
-        $maxAge = $request->query('vekova_kategoria');
-        $players = $request->query('hracov');
+        $maxAge   = $request->query('max_age');
+        $players  = $request->query('players');
 
-        $products = Product::where('is_discounted', true)
-            ->with(['images' => fn($query) => $query->orderBy('filename')]);
+        $query = Product::with(['images', 'discount'])
+            ->whereNotNull('discount_id')
+            ->whereHas('discount', fn($q) => $q->whereRaw(
+                "(starts_at IS NULL OR starts_at <= NOW()) AND (ends_at IS NULL OR ends_at >= NOW())"
+            ));
 
-        if (!is_null($minPrice)) {
-            $products->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) >= ?', [$minPrice]);
-        }
+        $this->applyFilters($query, $maxAge, $players);
 
-        if (!is_null($maxPrice)) {
-            $products->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) <= ?', [$maxPrice]);
-        }
-
-        if (!is_null($maxAge)) {
-            $products->where('min_age', '<=', $maxAge);
-        }
-
-        if (!is_null($players)) {
-            $products->where('max_players', '>=', $players);
-        }
-
-        switch ($sort) {
-            case 'price_asc':
-                $products->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) ASC');
-                break;
-            case 'price_desc':
-                $products->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) DESC');
-                break;
-            case 'desc':
-                $products->orderBy('name', 'desc');
-                break;
-            case 'asc':
-            default:
-                $products->orderBy('name', 'asc');
-                break;
-        }
-
-        $products = $products->paginate(42)->appends($request->query());
+        $products = $this->sortAndPaginate($query, $sort, $minPrice, $maxPrice, $request);
 
         return view('shop', [
-            'products' => $products,
-            'categoryTitle' => 'Akcie',
-            'sort' => $sort,
-            'vekova_kategoria' => $maxAge,
-            'hracov' => $players,
+            'products'      => $products,
+            'categoryTitle' => 'On Sale',
+            'sort'          => $sort,
+            'max_age'       => $maxAge,
+            'players'       => $players,
         ]);
     }
 
-
-    public function showNovinky(Request $request)
+    public function showNew(Request $request)
     {
-        $sort = $request->query('sort', 'default');
+        $sort     = $request->query('sort', 'default');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
-        $maxAge = $request->query('vekova_kategoria');
-        $players = $request->query('hracov');
+        $maxAge   = $request->query('max_age');
+        $players  = $request->query('players');
 
-        $products = Product::where('is_new', true)
-            ->with(['images' => fn($query) => $query->orderBy('filename')]);
+        $query = Product::with(['images', 'label'])
+            ->whereHas('label', fn($q) => $q->where('name', 'New'));
 
-        if (!is_null($minPrice)) {
-            $products->where('price', '>=', $minPrice);
-        }
+        $this->applyFilters($query, $maxAge, $players);
 
-        if (!is_null($maxPrice)) {
-            $products->where('price', '<=', $maxPrice);
-        }
-
-        if (!is_null($maxAge)) {
-            $products->where('min_age', '<=', $maxAge);
-        }
-
-        if (!is_null($players)) {
-            $products->where('max_players', '>=', $players);
-        }
-
-        switch ($sort) {
-            case 'price_asc':
-                $products->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $products->orderBy('price', 'desc');
-                break;
-            case 'desc':
-                $products->orderBy('name', 'desc');
-                break;
-            case 'asc':
-            default:
-                $products->orderBy('name', 'asc');
-                break;
-        }
-
-        $products = $products->paginate(42)->appends($request->query());
+        $products = $this->sortAndPaginate($query, $sort, $minPrice, $maxPrice, $request);
 
         return view('shop', [
-            'products' => $products,
-            'categoryTitle' => 'Novinky',
-            'sort' => $sort,
-            'vekova_kategoria' => $maxAge,
-            'hracov' => $players,
+            'products'      => $products,
+            'categoryTitle' => 'New Arrivals',
+            'sort'          => $sort,
+            'max_age'       => $maxAge,
+            'players'       => $players,
         ]);
     }
 
     public function showBestSellers(Request $request)
     {
-        $sort = $request->query('sort', 'default');
+        $sort     = $request->query('sort', 'default');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
-        $maxAge = $request->query('vekova_kategoria');
-        $players = $request->query('hracov');
+        $maxAge   = $request->query('max_age');
+        $players  = $request->query('players');
 
-        $products = Product::where('is_best_seller', true)
-            ->with(['images' => fn($query) => $query->orderBy('filename')]);
+        $query = Product::with(['images', 'label'])
+            ->whereHas('label', fn($q) => $q->where('name', 'Bestseller'));
 
-        if (!is_null($minPrice)) {
-            $products->where('price', '>=', $minPrice);
-        }
+        $this->applyFilters($query, $maxAge, $players);
 
-        if (!is_null($maxPrice)) {
-            $products->where('price', '<=', $maxPrice);
-        }
-
-        if (!is_null($maxAge)) {
-            $products->where('min_age', '<=', $maxAge);
-        }
-
-        if (!is_null($players)) {
-            $products->where('max_players', '>=', $players);
-        }
-
-        switch ($sort) {
-            case 'price_asc':
-                $products->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $products->orderBy('price', 'desc');
-                break;
-            case 'desc':
-                $products->orderBy('name', 'desc');
-                break;
-            case 'asc':
-            default:
-                $products->orderBy('name', 'asc');
-                break;
-        }
-
-        $products = $products->paginate(42)->appends($request->query());
+        $products = $this->sortAndPaginate($query, $sort, $minPrice, $maxPrice, $request);
 
         return view('shop', [
-            'products' => $products,
-            'categoryTitle' => 'Best sellers',
-            'sort' => $sort,
-            'vekova_kategoria' => $maxAge,
-            'hracov' => $players,
+            'products'      => $products,
+            'categoryTitle' => 'Bestsellers',
+            'sort'          => $sort,
+            'max_age'       => $maxAge,
+            'players'       => $players,
         ]);
     }
 
-    public function showOblubene(Request $request)
+    public function showFavorites(Request $request)
     {
-        $sort = $request->query('sort', 'default');
+        $sort     = $request->query('sort', 'default');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
-        $maxAge = $request->query('vekova_kategoria');
-        $players = $request->query('hracov');
+        $maxAge   = $request->query('max_age');
+        $players  = $request->query('players');
 
-        $products = Product::where('is_favorite', true)
-            ->with(['images' => fn($query) => $query->orderBy('filename')]);
-
-        if (!is_null($minPrice)) {
-            $products->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) >= ?', [$minPrice]);
+        if (auth()->check()) {
+            $query = auth()->user()->favorites()->with(['images', 'discount']);
+        } else {
+            $guestIds = session()->get('guest_favorites', []);
+            $query    = \App\Models\Product::with(['images', 'discount'])
+                ->whereIn('id', empty($guestIds) ? [0] : $guestIds);
         }
 
-        if (!is_null($maxPrice)) {
-            $products->whereRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) <= ?', [$maxPrice]);
-        }
+        $this->applyFilters($query, $maxAge, $players);
 
+        $products = $this->sortAndPaginate($query, $sort, $minPrice, $maxPrice, $request);
+
+        return view('shop', [
+            'products'      => $products,
+            'categoryTitle' => 'Your Favorites',
+            'sort'          => $sort,
+            'max_age'       => $maxAge,
+            'players'       => $players,
+        ]);
+    }
+
+    private function applyFilters($query, ?string $maxAge, ?string $players): void
+    {
         if (!is_null($maxAge)) {
-            $products->where('min_age', '<=', $maxAge);
+            $query->where('min_age', '<=', $maxAge);
         }
 
         if (!is_null($players)) {
-            $products->where('max_players', '>=', $players);
+            $query->where('max_players', '>=', $players);
         }
+    }
 
+    private function sortAndPaginate($query, string $sort, $minPrice, $maxPrice, Request $request)
+    {
         switch ($sort) {
             case 'price_asc':
-                $products->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) ASC');
+                $query->orderBy('price', 'asc');
                 break;
             case 'price_desc':
-                $products->orderByRaw('(CASE WHEN discounted_price IS NOT NULL THEN discounted_price ELSE price END) DESC');
+                $query->orderBy('price', 'desc');
                 break;
-            case 'desc':
-                $products->orderBy('name', 'desc');
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
                 break;
-            case 'asc':
             default:
-                $products->orderBy('name', 'asc');
-                break;
+                $query->orderBy('name', 'asc');
         }
 
-        $products = $products->paginate(42)->appends($request->query());
+        if (!is_null($minPrice) || !is_null($maxPrice)) {
+            $all = $query->get()->filter(function ($product) use ($minPrice, $maxPrice) {
+                $price = $product->effectivePrice();
+                if ($minPrice !== null && $price < $minPrice) return false;
+                if ($maxPrice !== null && $price > $maxPrice) return false;
+                return true;
+            });
 
-        return view('shop', [
-            'products' => $products,
-            'categoryTitle' => 'Vaše obľúbené produkty',
-            'sort' => $sort,
-            'vekova_kategoria' => $maxAge,
-            'hracov' => $players,
-        ]);
+            $perPage  = 30;
+            $page     = request()->input('page', 1);
+            $paged    = $all->slice(($page - 1) * $perPage, $perPage)->values();
+
+            return new \Illuminate\Pagination\LengthAwarePaginator(
+                $paged, $all->count(), $perPage, $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
+        }
+
+        return $query->paginate(30)->appends($request->query());
     }
 }

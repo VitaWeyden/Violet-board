@@ -3,20 +3,26 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Label;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
+    // Top N products (by bgg_rating) get the Bestseller label
+    private const BESTSELLER_COUNT = 20;
+
+    // Top N newest products (by id) get the New label
+    private const NEW_COUNT = 15;
+
     public function run(): void
     {
         $jsonPath = database_path('data/games.json');
 
         if (!file_exists($jsonPath)) {
             $this->command->error('Dataset not found!');
-            $this->command->line('');
             $this->command->line('Place the dataset at: database/data/games.json');
-            $this->command->line('You can find it in the repository under database/data/');
             return;
         }
 
@@ -55,6 +61,13 @@ class ProductSeeder extends Seeder
                 'in_stock'      => true,
             ]);
 
+            if (!empty($game['image_url'])) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'url'        => $game['image_url'],
+                ]);
+            }
+
             $categoryIds = [];
             foreach ($game['categories'] ?? [] as $categoryName) {
                 if ($categories->has($categoryName)) {
@@ -71,13 +84,39 @@ class ProductSeeder extends Seeder
         }
 
         $this->command->line('');
-        $this->command->info("Done! Created: {$created}, Skipped (already exists): {$skipped}");
+        $this->command->info("Done! Created: {$created}, Skipped: {$skipped}");
+
+        $this->assignLabels();
     }
 
-    /**
-     * Generates a realistic price based on game complexity.
-     * weight 1 → ~€16, weight 5 → ~€75
-     */
+    private function assignLabels(): void
+    {
+        $bestsellerLabel = Label::where('name', 'Bestseller')->first();
+        $newLabel        = Label::where('name', 'New')->first();
+
+        if ($bestsellerLabel) {
+            Product::whereNotNull('bgg_rating')
+                ->orderByDesc('bgg_rating')
+                ->take(self::BESTSELLER_COUNT)
+                ->get()
+                ->each(fn($p) => $p->update(['label_id' => $bestsellerLabel->id]));
+
+            $this->command->info('✓ Bestseller labels assigned.');
+        }
+
+        if ($newLabel) {
+            // The most recently inserted products (highest id) = "New"
+            // Skip products already marked as Bestseller
+            Product::whereNull('label_id')
+                ->orderByDesc('id')
+                ->take(self::NEW_COUNT)
+                ->get()
+                ->each(fn($p) => $p->update(['label_id' => $newLabel->id]));
+
+            $this->command->info('✓ New labels assigned.');
+        }
+    }
+
     private function generatePrice(?float $weight): float
     {
         $base  = $weight ? ($weight * 12) + 10 : 29.99;

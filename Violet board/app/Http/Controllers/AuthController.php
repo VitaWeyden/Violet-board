@@ -2,94 +2,109 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Cart;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'required|string|max:100',
+            'email'      => 'required|email|unique:users',
+            'password'   => 'required|min:6|confirmed',
         ]);
 
-        $user = new User();
-        $user->name = $request->name . ' ' . $request->surname;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->save();
+        User::create([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+        ]);
 
-        return redirect('/prihlasenie')->with('success', 'Registrácia prebehla úspešne! Prihláste sa.');
+        return redirect('/login')->with('success', 'Registration successful! Please sign in.');
     }
-
-
 
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $sessionCart = session()->get('cart', []);
-            $dbCart = \App\Models\Cart::where('user_id', $user->id)->first();
-
-            if ($dbCart) {
-                $dbItems = json_decode($dbCart->items, true);
-
-                foreach ($sessionCart as $productId => $item) {
-                    if (isset($dbItems[$productId])) {
-                        $dbItems[$productId]['quantity'] += $item['quantity'];
-                    } else {
-                        $dbItems[$productId] = $item;
-                    }
-                }
-
-            } else {
-                $dbItems = $sessionCart;
-            }
-
-            \App\Models\Cart::updateOrCreate(
-                ['user_id' => $user->id],
-                ['items' => json_encode($dbItems)]
-            );
-
-            session(['cart' => $dbItems]);
-
-            return redirect('/')->with('success', 'Prihlásenie prebehlo úspešne!');
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Incorrect email or password.',
+            ]);
         }
 
-        return back()->withErrors([
-            'email' => 'Nesprávny email alebo heslo.',
-        ]);
+        $this->mergeGuestCartIntoUserCart();
+        $this->mergeGuestFavoritesIntoUser();
+
+        return redirect('/')->with('success', 'Welcome back!');
     }
-
-
-
-    public function destroy(Request $request)
-    {
-        $user = auth()->user();
-
-        auth()->logout();
-
-        $user->delete();
-
-        return redirect('/')->with('success', 'Váš účet bol úspešne vymazaný.');
-    }
-
-
 
     public function logout()
     {
-        session()->forget('cart');
-
         Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
         return redirect('/');
     }
 
+    public function destroy()
+    {
+        $user = auth()->user();
+        auth()->logout();
+        $user->delete();
+
+        return redirect('/')->with('success', 'Your account has been successfully deleted.');
+    }
+
+    private function mergeGuestFavoritesIntoUser(): void
+    {
+        $guestFavorites = session()->get('guest_favorites', []);
+
+        if (empty($guestFavorites)) {
+            return;
+        }
+
+        $user        = auth()->user();
+        $existingIds = $user->favorites()->pluck('products.id')->toArray();
+        $toAttach    = array_diff($guestFavorites, $existingIds);
+
+        foreach ($toAttach as $productId) {
+            $user->favorites()->attach($productId, ['created_at' => now()]);
+        }
+
+        session()->forget('guest_favorites');
+    }
+
+    private function mergeGuestCartIntoUserCart(): void
+    {
+        $sessionId = session()->getId();
+        $guestCart = Cart::with('items')->where('session_id', $sessionId)->first();
+        $userCart  = Cart::firstOrCreate(['user_id' => auth()->id()]);
+
+        if (!$guestCart || $guestCart->items->isEmpty()) {
+            return;
+        }
+
+        foreach ($guestCart->items as $guestItem) {
+            $existing = $userCart->items()->where('product_id', $guestItem->product_id)->first();
+
+            if ($existing) {
+                $existing->increment('quantity', $guestItem->quantity);
+            } else {
+                $userCart->items()->create([
+                    'product_id' => $guestItem->product_id,
+                    'quantity'   => $guestItem->quantity,
+                ]);
+            }
+        }
+
+        $guestCart->delete();
+    }
 }

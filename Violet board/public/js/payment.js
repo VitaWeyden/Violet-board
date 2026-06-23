@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardExpiry  = document.getElementById('card-expiry');
     const cardCvc     = document.getElementById('card-cvc');
     const submitBtn   = document.getElementById('submit-btn');
-    const modal       = document.getElementById('dakujemeModal');
+    const modal       = document.getElementById('thankYouModal');
     const form        = document.getElementById('paymentForm');
 
     let currentMethod = 'card';
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cardNumClean = cardNumber.value.replace(/\s+/g, '');
         if (!/^\d{16}$/.test(cardNumClean)) {
-            showError(cardNumber, 'err-number', 'Číslo karty musí mať presne 16 číslic.');
+            showError(cardNumber, 'err-number', 'Card number must be exactly 16 digits.');
             valid = false;
         } else {
             clearError(cardNumber);
@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
         if (!expiryRegex.test(cardExpiry.value)) {
-            showError(cardExpiry, 'err-expiry', 'Formát dátumu: MM/RR (napr. 05/27)');
+            showError(cardExpiry, 'err-expiry', 'Date format: MM/YY (e.g. 05/27)');
             valid = false;
         } else {
             const [mm, yy] = cardExpiry.value.split('/').map(Number);
             if (new Date(2000 + yy, mm - 1) < new Date()) {
-                showError(cardExpiry, 'err-expiry', 'Platnosť karty vypršala.');
+                showError(cardExpiry, 'err-expiry', 'This card has expired.');
                 valid = false;
             } else {
                 clearError(cardExpiry);
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!/^\d{3}$/.test(cardCvc.value)) {
-            showError(cardCvc, 'err-cvc', 'CVC musí mať presne 3 číslice.');
+            showError(cardCvc, 'err-cvc', 'CVC must be exactly 3 digits.');
             valid = false;
         } else {
             clearError(cardCvc);
@@ -95,14 +95,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentMethod === 'card' && !validateCard()) return;
 
-        modal.style.display = 'flex';
-
         fetch(form.action, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
-            body: new FormData(form)
-        });
+            body: new FormData(form),
+        })
+        .then(r => r.json())
+        .then(json => {
+            if (json.success) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        })
+        .catch(() => form.submit());
     });
 });
