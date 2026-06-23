@@ -11,4 +11,4 @@
 * Box Collect locations are defined in the `config/box_collect_locations.php` file.
 * Discounts and the `New` / `Bestseller` labels are assigned to products during the seeding process.
 * Orders are stored in the database after checkout; however, no real payment gateway integration has been implemented.
-* The website can be browsed as a guest user, and products can be added to the cart or wishlist. However, placing an order requires authentication.
+* The website can be browsed as a guest user, and products can be added to the cart or wishlist.
