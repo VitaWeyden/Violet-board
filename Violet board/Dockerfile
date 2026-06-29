@@ -40,5 +40,8 @@ RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
 EXPOSE 9000
-CMD ["php-fpm"]
+ENTRYPOINT ["./entrypoint.sh"]
