@@ -105,7 +105,7 @@
 
     border: none;
 
-    border-radius: 50%;
+    border-radius: 0;
 
     color: var(--color-text-muted);
 
@@ -332,24 +332,4 @@
     cursor: default;
 
     user-select: none;
-}
-
-/* ============================================================
-   HOME & SHOP — sharp edges
-   (scoped to these two pages only; every other page keeps the
-   rounded card style)
-   ============================================================ */
-
-body.page-home .product-card,
-body.page-home .home-hero,
-body.page-home .home-hero-eyebrow,
-body.page-home .category-tile,
-body.page-home .category-tile-icon,
-body.page-home .carousel-section,
-body.page-home .product-details,
-body.page-shop .product-details,
-body.page-shop .cart-counter,
-body.page-shop .shop-product-card .btn-primary {
-
-    border-radius: 0;
 }

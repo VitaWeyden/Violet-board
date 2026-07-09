@@ -366,7 +366,7 @@
     width: 18px;
     height: 18px;
 
-    border-radius: 50%;
+    border-radius: 0;
 
     background-color: var(--color-primary) !important;
 
@@ -388,7 +388,7 @@
     width: 18px;
     height: 18px;
 
-    border-radius: 50%;
+    border-radius: 0;
 
     background-color: var(--color-primary) !important;
 
@@ -428,7 +428,7 @@
 
     cursor: pointer;
 
-    border-radius: 50%;
+    border-radius: 0;
 
     transition: .2s ease;
 }

@@ -54,12 +54,23 @@
     --space-7: 48px;
     --space-8: 64px;
 
-    /* Radius */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --radius-full: 999px;
+    /* Radius — sharp everywhere (no rounding) */
+    --radius-sm: 0;
+    --radius-md: 0;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-full: 0;
+
+    /* Neutralize Bootstrap's own corner-rounding variables so
+       plain Bootstrap components (form-control, alert, badge,
+       card, dropdown-menu, etc.) go sharp too. */
+    --bs-border-radius: 0;
+    --bs-border-radius-sm: 0;
+    --bs-border-radius-lg: 0;
+    --bs-border-radius-xl: 0;
+    --bs-border-radius-xxl: 0;
+    --bs-border-radius-2xl: 0;
+    --bs-border-radius-pill: 0;
 
     /* Shadows — soft & neutral */
     --shadow-sm: 0 2px 8px rgba(43,43,80,.06);

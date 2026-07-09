@@ -102,7 +102,7 @@
 
     height: 44px;
 
-    border-radius: 50%;
+    border-radius: 0;
 
     background: var(--color-surface);
 
@@ -214,7 +214,7 @@
 
 .page-breadcrumb-sep {
 
-    color: var(--color-border);
+    color: var(--color-text-muted);
 }
 
 .page-breadcrumb-current {

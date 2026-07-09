@@ -130,7 +130,7 @@
     height: 24px;
 
     border: none;
-    border-radius: 50%;
+    border-radius: 0;
 
     background: var(--color-primary-light);
     color: var(--color-primary-dark);

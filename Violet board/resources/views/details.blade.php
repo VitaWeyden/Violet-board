@@ -55,20 +55,42 @@
             <div class="product-panel product-panel--top">
                 <div class="row align-items-center">
                     {{-- Images --}}
-                    <div class="col-md-6 d-flex justify-content-center align-items-center">
-                        <div class="product-image-wrapper position-relative" style="width:100%;max-width:480px;">
-                            <button class="arrow-section position-absolute top-50 start-0 translate-middle-y" style="z-index:10;margin-left:8px;" onclick="changeImage(-1)">&#9664;</button>
-                            <div class="product-image" id="productImage" style="height:360px;">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        @php $imageCount = $product->images->count(); @endphp
+                        <div class="product-gallery">
+                            <div class="product-gallery-main">
+                                @if ($imageCount > 1)
+                                    <button type="button" class="arrow-section product-gallery-arrow product-gallery-arrow--left" onclick="changeImage(-1)" aria-label="Previous image">&#9664;</button>
+                                @endif
+
                                 <img
                                     id="activeImage"
+                                    class="product-gallery-image"
                                     src="{{ $firstImage }}"
                                     alt="{{ $product->name }}"
                                     data-images="{{ $imageUrls }}"
                                     data-current="0"
-                                    style="max-width:100%;max-height:100%;display:block;border-radius:16px;cursor:zoom-in;"
                                     onclick="openImageLightbox()">
+
+                                @if ($imageCount > 1)
+                                    <button type="button" class="arrow-section product-gallery-arrow product-gallery-arrow--right" onclick="changeImage(1)" aria-label="Next image">&#9654;</button>
+                                    <span class="product-gallery-counter" id="galleryCounter">1 / {{ $imageCount }}</span>
+                                @endif
                             </div>
-                            <button class="arrow-section position-absolute top-50 end-0 translate-middle-y" style="z-index:10;margin-right:8px;" onclick="changeImage(1)">&#9654;</button>
+
+                            @if ($imageCount > 1)
+                                <div class="product-gallery-thumbs" id="galleryThumbs">
+                                    @foreach ($product->images as $index => $img)
+                                        <button
+                                            type="button"
+                                            class="product-gallery-thumb {{ $index === 0 ? 'active' : '' }}"
+                                            onclick="goToImage({{ $index }})"
+                                        >
+                                            <img src="{{ $img->url }}" alt="{{ $product->name }} thumbnail {{ $index + 1 }}">
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -145,7 +167,7 @@
 
                             <form action="{{ route('favorite.toggle', ['id' => $product->id]) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="heart-icon" style="position:static;width:40px;height:40px;background:white;border-radius:50%;border:1px solid var(--color-border);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;">
+                                <button type="submit" class="heart-icon" style="position:static;width:40px;height:40px;background:white;border-radius:0;border:1px solid var(--color-border);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;">
                                     <svg viewBox="0 0 24 24" fill="{{ $isFavorite ? '#DC2626' : '#D1D5DB' }}" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                     </svg>
@@ -173,7 +195,7 @@
                         {{ $product->min_players }}–{{ $product->max_players }} players
                     </span>
                     <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 7.5V12l3 2"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>
                         {{ $product->min_age }}+
                     </span>
                     @if ($product->play_time_min)
@@ -206,9 +228,13 @@
     {{-- Lightbox --}}
     <div id="imageLightbox" class="image-lightbox" onclick="closeImageLightboxOnBackdrop(event)">
         <button type="button" class="image-lightbox-close" onclick="closeImageLightbox()" aria-label="Close">&times;</button>
-        <button type="button" class="arrow-section image-lightbox-arrow image-lightbox-arrow--left" onclick="event.stopPropagation(); changeImage(-1)">&#9664;</button>
+        @if ($imageCount > 1)
+            <button type="button" class="arrow-section image-lightbox-arrow image-lightbox-arrow--left" onclick="event.stopPropagation(); changeImage(-1)">&#9664;</button>
+        @endif
         <img id="lightboxImage" src="" alt="{{ $product->name }}" class="image-lightbox-img" onclick="event.stopPropagation()">
-        <button type="button" class="arrow-section image-lightbox-arrow image-lightbox-arrow--right" onclick="event.stopPropagation(); changeImage(1)">&#9654;</button>
+        @if ($imageCount > 1)
+            <button type="button" class="arrow-section image-lightbox-arrow image-lightbox-arrow--right" onclick="event.stopPropagation(); changeImage(1)">&#9654;</button>
+        @endif
     </div>
 
     <script>
@@ -216,14 +242,34 @@
             const activeImage   = document.getElementById('activeImage');
             const lightbox      = document.getElementById('imageLightbox');
             const lightboxImage = document.getElementById('lightboxImage');
+            const counterEl     = document.getElementById('galleryCounter');
+            const thumbsWrap    = document.getElementById('galleryThumbs');
             const images        = JSON.parse(activeImage.dataset.images || '[]');
             let current         = 0;
 
-            window.changeImage = function (dir) {
+            function updateGalleryUI() {
+                if (counterEl) counterEl.textContent = (current + 1) + ' / ' + images.length;
+                if (thumbsWrap) {
+                    thumbsWrap.querySelectorAll('.product-gallery-thumb').forEach((thumb, i) => {
+                        thumb.classList.toggle('active', i === current);
+                    });
+                }
+            }
+
+            function setImage(index) {
                 if (!images.length) return;
-                current = (current + dir + images.length) % images.length;
+                current = ((index % images.length) + images.length) % images.length;
                 activeImage.src = images[current];
                 if (lightbox.classList.contains('show')) lightboxImage.src = images[current];
+                updateGalleryUI();
+            }
+
+            window.changeImage = function (dir) {
+                setImage(current + dir);
+            };
+
+            window.goToImage = function (index) {
+                setImage(index);
             };
 
             window.openImageLightbox = function () {
