@@ -5,8 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $product->name }} – Violet Board</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cards-cart-payment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/carousel-breadcrumb-badges.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cart-controls-filters.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-brand.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-support-help.css') }}">
 </head>
 
 @php
@@ -23,7 +34,9 @@
 
 <body>
     @include('partials.header')
+    @include('partials.sidebar')
 
+    <main class="main-content">
     <div class="container" style="padding-top: 16px;">
         @php
             $breadcrumbItems = [['label' => 'Home', 'url' => url('/')]];
@@ -81,21 +94,6 @@
                             @endforeach
                         </div>
 
-                        {{-- Game info badges --}}
-                        <div class="d-flex gap-2 flex-wrap justify-content-center mt-2 mb-2">
-                            <span class="badge bg-light text-dark border">👥 {{ $product->min_players }}–{{ $product->max_players }} players</span>
-                            <span class="badge bg-light text-dark border">🎂 {{ $product->min_age }}+</span>
-                            @if ($product->play_time_min)
-                                <span class="badge bg-light text-dark border">⏱ {{ $product->play_time_min }}–{{ $product->play_time_max }} min</span>
-                            @endif
-                            @if ($product->bgg_rating)
-                                <span class="badge bg-light text-dark border">⭐ {{ number_format($product->bgg_rating, 1) }}/10</span>
-                            @endif
-                            @if ($product->weight)
-                                <span class="badge bg-light text-dark border">🧠 Complexity {{ number_format($product->weight, 1) }}/5</span>
-                            @endif
-                        </div>
-
                         <div class="stock-status {{ $product->in_stock ? 'in-stock' : 'out-of-stock' }}">
                             @if ($product->in_stock)
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,7 +132,7 @@
                                             <input type="hidden" name="action" value="decrease">
                                             <button type="submit" class="cart-counter-btn">−</button>
                                         </form>
-                                        <input type="number" class="cart-counter-input js-cart-qty-input" value="1" min="1"
+                                        <input type="number" class="cart-counter-input js-cart-qty-input" value="{{ $cartQuantity ?? 1 }}" min="1"
                                             data-update-url="{{ route('cart.update', ['id' => $product->id]) }}">
                                         <form action="{{ route('cart.update', ['id' => $product->id]) }}" method="POST" class="ajax-cart-form">
                                             @csrf
@@ -156,7 +154,10 @@
                         </div>
 
                         <div class="mt-3">
-                            <a href="{{ url('/shop') }}" class="btn" style="background:var(--color-primary-light);color:var(--color-primary);border-radius:var(--radius-full);font-weight:500;">← Back to Shop</a>
+                            <a href="{{ url('/shop') }}" class="btn d-inline-flex align-items-center gap-2" style="background:var(--color-primary-light);color:var(--color-primary);border-radius:var(--radius-full);font-weight:500;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>
+                                Back to Shop
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -164,11 +165,43 @@
 
             <div class="product-panel product-panel--description">
                 <hr class="product-description-divider">
+
+                <h3 class="text-center">Game Details</h3>
+                <div class="d-flex gap-2 flex-wrap justify-content-center mb-4">
+                    <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="8.5" cy="8.5" r="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="9.5" r="2" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M4 19c0-2.5 2-4.5 4.5-4.5S13 16.5 13 19M14.5 19c0-2 1.4-3.5 3.2-3.5 1 0 1.8.4 2.3 1"/></svg>
+                        {{ $product->min_players }}–{{ $product->max_players }} players
+                    </span>
+                    <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 7.5V12l3 2"/></svg>
+                        {{ $product->min_age }}+
+                    </span>
+                    @if ($product->play_time_min)
+                        <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>
+                            {{ $product->play_time_min }}–{{ $product->play_time_max }} min
+                        </span>
+                    @endif
+                    @if ($product->bgg_rating)
+                        <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.6L22 9.3l-5.1 4.9 1.4 7.1L12 17.8l-6.3 3.5 1.4-7.1L2 9.3l7.1-.7L12 2z"/></svg>
+                            {{ number_format($product->bgg_rating, 1) }}/10
+                        </span>
+                    @endif
+                    @if ($product->weight)
+                        <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M9 4.5A2.5 2.5 0 0 0 6.5 7v.3A3 3 0 0 0 4.5 10a3 3 0 0 0 1 5.7A2.8 2.8 0 0 0 8.3 19c1.5 0 3.7-1 3.7-2.8V7A2.5 2.5 0 0 0 9 4.5z"/><path stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M15 4.5A2.5 2.5 0 0 1 17.5 7v.3a3 3 0 0 1 2 2.7 3 3 0 0 1-1 5.7 2.8 2.8 0 0 1-2.8 3.3c-1.5 0-3.7-1-3.7-2.8V7A2.5 2.5 0 0 1 15 4.5z"/></svg>
+                            Complexity {{ number_format($product->weight, 1) }}/5
+                        </span>
+                    @endif
+                </div>
+
                 <h3 class="text-center">About this Game</h3>
                 <p>{!! $product->description !!}</p>
             </div>
         </div>
     </div>
+    </main>
 
     {{-- Lightbox --}}
     <div id="imageLightbox" class="image-lightbox" onclick="closeImageLightboxOnBackdrop(event)">
@@ -217,7 +250,6 @@
         })();
     </script>
 
-    @include('partials.footer')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/cart-ajax.js') }}"></script>

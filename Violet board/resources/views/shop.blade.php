@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $categoryTitle ?? 'Shop' }} – Violet Board</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cards-cart-payment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/carousel-breadcrumb-badges.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cart-controls-filters.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-brand.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-support-help.css') }}">
     <style>
         .shop-product-card {
             background: white;
             border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 2px 8px rgba(109,40,217,0.08);
+            border-radius: 0;
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
             transition: .25s ease;
             height: 100%;
@@ -22,8 +33,8 @@
         }
         .shop-product-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(109,40,217,0.14);
-            border-color: var(--color-teal);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-border);
         }
         .shop-product-card .product-image { height: 120px; }
         .shop-product-card .product-details { padding: 10px; margin: 8px; font-size: 0.8rem; }
@@ -31,7 +42,7 @@
     </style>
 </head>
 
-<body>
+<body class="page-shop">
     @include('partials.header')
     @include('partials.sidebar')
 
@@ -297,7 +308,9 @@
                             </div>
                             <h4 style="color:var(--color-primary);font-weight:600;margin-bottom:8px">No favorites yet</h4>
                             <p style="color:var(--color-text-muted);margin-bottom:24px">
-                                Click the ❤ icon on any product to add it to your favorites.
+                                Click the
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#DC2626" style="vertical-align:-2px"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                icon on any product to add it to your favorites.
                             </p>
                         @else
                             <div style="margin-bottom:16px;display:flex;justify-content:center;">
@@ -323,7 +336,6 @@
 
     </main>
 
-    @include('partials.footer')
 
     <script src="{{ asset('js/sidebar-toggle.js') }}"></script>
     <script src="{{ asset('js/price-range.js') }}"></script>

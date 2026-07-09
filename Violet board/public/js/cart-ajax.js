@@ -36,12 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
                 },
                 body: formData,
             });
-            if (!response.ok) return null;
+            if (!response.ok) {
+                console.error('Cart request failed:', response.status, response.statusText, url);
+                return null;
+            }
             return await response.json();
         } catch (err) {
+            console.error('Cart request error:', err, url);
             return null;
         }
     }
@@ -111,11 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await sendCartRequest(form.action, formData);
 
         if (!data) {
+            console.warn('Cart AJAX request returned no data — falling back to a normal form submit.', form.action);
             form.submit();
             return;
         }
 
         const container = form.closest('[data-product-id]');
+        if (!container) {
+            console.warn('Cart AJAX: could not find a [data-product-id] ancestor for this form — quantity display will not update.', form);
+        }
         updateCartPreview(data);
 
         if (data.removed) {

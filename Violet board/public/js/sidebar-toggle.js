@@ -12,5 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mainContent) {
             mainContent.classList.toggle('expanded', collapsed);
         }
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
     });
 });

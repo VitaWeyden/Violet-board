@@ -45,8 +45,8 @@ Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place
 
 
 // -- Auth --
-Route::get('/login', fn() => view('log-in'))->name('login');
-Route::get('/register', fn() => view('registration'))->name('register.form');
+Route::get('/login', fn() => view('auth', ['mode' => 'login']))->name('login');
+Route::get('/register', fn() => view('auth', ['mode' => 'register']))->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

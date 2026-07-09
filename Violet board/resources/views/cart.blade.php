@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Cart – Violet Board</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cards-cart-payment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/carousel-breadcrumb-badges.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-brand.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-support-help.css') }}">
 </head>
 <body>
     @include('partials.header')
+    @include('partials.sidebar')
 
     @php
         use App\Models\Cart;
@@ -26,6 +37,7 @@
         $totalItems = $cartItems->sum('quantity');
     @endphp
 
+    <main class="main-content" id="mainContent">
     <div class="container cart-container" style="margin-top: 24px;">
         <div class="row">
             <div class="col-md-8">
@@ -89,7 +101,9 @@
                         {{-- Remove --}}
                         <form action="{{ route('cart.remove', ['id' => $cartItem->product_id]) }}" method="POST" class="d-inline ajax-cart-form">
                             @csrf
-                            <button class="btn btn-sm btn-outline-danger px-2">✕</button>
+                            <button class="btn btn-sm btn-outline-danger px-2 d-inline-flex align-items-center justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                            </button>
                         </form>
                     </div>
                 @empty
@@ -97,9 +111,9 @@
                         <div class="empty-state-card">
                             <div style="margin-bottom:16px;display:flex;justify-content:center;">
                                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 8h6l8 28h28l6-20H18" stroke="#6D28D9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                    <circle cx="26" cy="52" r="4" fill="#6D28D9"/>
-                                    <circle cx="44" cy="52" r="4" fill="#6D28D9"/>
+                                    <path d="M6 8h6l8 28h28l6-20H18" stroke="#7C3AED" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <circle cx="26" cy="52" r="4" fill="#7C3AED"/>
+                                    <circle cx="44" cy="52" r="4" fill="#7C3AED"/>
                                 </svg>
                             </div>
                             <h4 style="color:var(--color-primary);font-weight:600;margin-bottom:8px">Your cart is empty</h4>
@@ -122,13 +136,15 @@
                     <button onclick="checkCart()" class="btn btn-primary w-100 mt-2">
                         Choose Delivery Method
                     </button>
-                    <a href="/shop" class="btn w-100 mt-2" style="background:var(--color-primary-light);color:var(--color-primary);border-radius:var(--radius-full);font-weight:500;">
-                        ← Continue Shopping
+                    <a href="/shop" class="btn w-100 mt-2 d-inline-flex align-items-center justify-content-center gap-2" style="background:var(--color-primary-light);color:var(--color-primary);border-radius:var(--radius-full);font-weight:500;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>
+                        Continue Shopping
                     </a>
                 </div>
             </div>
         </div>
     </div>
+    </main>
 
     <div id="themedAlert" class="themed-alert" role="alert" onclick="if (event.target === this) closeThemedAlert()">
         <div class="themed-alert-card">
@@ -142,7 +158,6 @@
         </div>
     </div>
 
-    @include('partials.footer')
 
     <script>
         (function () {

@@ -1,0 +1,46 @@
+/* ============================================================
+   RESET
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    font-family: var(--font-body);
+    color: var(--color-text);
+
+    background: var(--color-bg);
+
+    line-height: 1.6;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    padding-top: var(--navbar-height);
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+}

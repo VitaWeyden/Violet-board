@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $mode === 'box' ? 'Box Collect' : 'Courier Delivery' }} – Violet Board</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cards-cart-payment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
 </head>
 <body>
     @include('partials.header')
@@ -131,7 +137,6 @@
         </div>
     </div>
 
-    @include('partials.footer')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @if($mode === 'box')
         <script src="{{ asset('js/boxcollect.js') }}"></script>

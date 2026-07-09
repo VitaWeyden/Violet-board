@@ -19,11 +19,12 @@ class ProductController extends Controller
             : in_array($id, session()->get('guest_favorites', []));
 
         return view('details', [
-            'product'    => $product,
-            'isInCart'   => $this->isInCart($id),
-            'isFavorite' => $isFavorite,
-            'fromLabel'  => request('from_label'),
-            'fromUrl'    => request('from_url'),
+            'product'      => $product,
+            'isInCart'     => $this->isInCart($id),
+            'cartQuantity' => $this->cartQuantityFor($id),
+            'isFavorite'   => $isFavorite,
+            'fromLabel'    => request('from_label'),
+            'fromUrl'      => request('from_url'),
         ]);
     }
 
@@ -220,5 +221,20 @@ class ProductController extends Controller
         if (!$cart) return false;
 
         return $cart->items()->where('product_id', $productId)->exists();
+    }
+
+    public function cartQuantityFor(int $productId): int
+    {
+        if (auth()->check()) {
+            $cart = Cart::where('user_id', auth()->id())->first();
+        } else {
+            $cart = Cart::where('session_id', session()->getId())->first();
+        }
+
+        if (!$cart) return 1;
+
+        $item = $cart->items()->where('product_id', $productId)->first();
+
+        return $item?->quantity ?? 1;
     }
 }

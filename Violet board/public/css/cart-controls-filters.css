@@ -1,0 +1,459 @@
+/* ── Cart quantity counter (replaces Add to cart once added) ─ */
+.cart-counter {
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    height: 31px;
+
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+
+    border-radius: var(--radius-full);
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+}
+
+.cart-counter form {
+    flex-shrink: 0;
+    display: flex;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.cart-counter-btn {
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    background: transparent;
+
+    border: none;
+
+    color: #ffffff;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    width: 32px;
+
+    flex: 0 0 32px;
+
+    height: 100%;
+
+    cursor: pointer;
+}
+
+.cart-counter-btn:hover {
+
+    background: rgba(0,0,0,0.12);
+}
+
+.cart-counter-input {
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    text-align: center;
+
+    color: var(--color-primary-dark);
+
+    font-weight: 700;
+
+    font-size: var(--text-sm);
+
+    background: var(--color-primary-light);
+
+    border: none;
+
+    border-radius: 0;
+
+    outline: none;
+
+    padding: 0;
+
+    margin: 0;
+
+    box-sizing: border-box;
+
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.cart-counter-input::-webkit-outer-spin-button,
+.cart-counter-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.category-title {
+
+    font-family: var(--font-display);
+
+    font-size: 2.5rem;
+
+    font-weight: 700;
+
+    color: var(--color-primary-dark);
+
+    text-align: center;
+
+    display: block;
+
+    width: 100%;
+
+    padding: 16px 0 4px;
+
+    margin-bottom: 20px;
+
+    border-bottom: none;
+}
+
+/* ── Dropdown gombok (Zoradiť / Filter) ───────────────────── */
+.btn-outline-secondary {
+
+    color: #4B5563 !important;
+
+    border-color: #4B5563 !important;
+
+    background: transparent !important;
+
+    font-family: var(--font-body);
+
+    font-weight: 500;
+
+    border-radius: var(--radius-full) !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary.show {
+
+    background: #4B5563 !important;
+
+    color: #ffffff !important;
+
+    border-color: #4B5563 !important;
+
+    box-shadow: none !important;
+}
+
+/* ── Sort / filter status pills (show what's currently applied) ── */
+.filter-pill {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    height: 40px;
+
+    padding: 0 16px;
+
+    background: var(--color-teal-light);
+
+    color: var(--color-teal-dark);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-full);
+
+    font-family: var(--font-body);
+
+    font-weight: 500;
+
+    font-size: var(--text-sm);
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.filter-pill:hover,
+.filter-pill[aria-expanded="true"] {
+
+    background: var(--color-teal);
+
+    color: #ffffff;
+}
+
+.filter-pill-group {
+
+    display: inline-flex;
+    align-items: stretch;
+
+    border-radius: var(--radius-full);
+
+    overflow: hidden;
+}
+
+.filter-pill-trigger {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    height: 40px;
+
+    padding: 0 16px;
+
+    background: var(--color-teal-light);
+
+    color: var(--color-teal-dark);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-full);
+
+    font-family: var(--font-body);
+
+    font-weight: 500;
+
+    font-size: var(--text-sm);
+
+    cursor: pointer;
+
+    max-width: 220px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    transition: .2s ease;
+}
+
+.filter-pill-group.has-active .filter-pill-trigger {
+
+    border-radius: var(--radius-full) 0 0 var(--radius-full);
+
+    padding-right: 10px;
+}
+
+.filter-pill-trigger:hover,
+.filter-pill-trigger[aria-expanded="true"] {
+
+    background: var(--color-teal);
+
+    color: #ffffff;
+}
+
+.filter-pill-clear {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+
+    background: var(--color-teal-light);
+
+    color: var(--color-teal-dark);
+
+    border-left: 1px solid rgba(0,0,0,0.06);
+
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+
+    text-decoration: none;
+
+    transition: .2s ease;
+}
+
+.filter-pill-clear:hover {
+
+    background: var(--color-danger);
+
+    color: #ffffff;
+}
+
+/* ── Price range slider (two overlapping native inputs) ──── */
+.price-range-slider {
+
+    position: relative;
+
+    height: 36px;
+
+    margin: 8px 2px 2px;
+}
+
+.price-range-track {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 0;
+    right: 0;
+
+    height: 4px;
+
+    background: var(--color-teal);
+
+    border-radius: var(--radius-full);
+
+    transform: translateY(-50%);
+
+    z-index: 1;
+}
+
+.price-range-input {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 36px;
+
+    margin: 0;
+
+    background: transparent;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    accent-color: var(--color-primary);
+
+    outline: none;
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+.price-range-input:focus {
+    outline: none;
+}
+
+.price-range-input::-webkit-slider-runnable-track {
+    background: none;
+    border: none;
+    box-shadow: none;
+    height: 4px;
+}
+
+.price-range-input::-moz-range-track {
+    background: none;
+    border: none;
+    box-shadow: none;
+    height: 4px;
+}
+
+.price-range-input::-moz-range-progress {
+    background: none;
+}
+
+.price-range-input::-webkit-slider-thumb {
+
+    -webkit-appearance: none;
+
+    pointer-events: auto;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background-color: var(--color-primary) !important;
+
+    border: 2px solid #ffffff;
+
+    box-shadow: var(--shadow-sm);
+
+    cursor: pointer;
+
+    outline: none;
+
+    margin-top: -7px;
+}
+
+.price-range-input::-moz-range-thumb {
+
+    pointer-events: auto;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background-color: var(--color-primary) !important;
+
+    border: 2px solid #ffffff;
+
+    box-shadow: var(--shadow-sm);
+
+    cursor: pointer;
+
+    outline: none;
+}
+
+.price-range-input-max {
+    z-index: 4;
+}
+
+.price-range-input-min {
+    z-index: 3;
+}
+
+.filter-field-clear {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+
+    color: var(--color-text-muted);
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition: .2s ease;
+}
+
+.filter-field-clear:hover {
+
+    color: #ffffff;
+
+    background: var(--color-danger);
+}
+
+.dropdown-menu {
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-md);
+
+    z-index: 200 !important;
+}
+
+.dropdown-item:hover {
+
+    background: var(--color-teal-light);
+
+    color: var(--color-teal-dark);
+}

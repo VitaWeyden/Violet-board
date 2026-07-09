@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Checkout – Violet Board</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo-mark.svg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/cards-cart-payment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
 </head>
 <body>
     @include('partials.header')
@@ -91,7 +97,7 @@
         background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
         <div style="
             background:white; border-radius:var(--radius-lg);
-            box-shadow:0 8px 32px rgba(109,40,217,0.18);
+            box-shadow:var(--shadow-lg);
             padding:40px 32px; max-width:420px; width:90%; text-align:center;">
             <div style="margin-bottom:16px;">
                 <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -113,7 +119,6 @@
         </div>
     </div>
 
-    @include('partials.footer')
 
     <script src="{{ asset('js/platba.js') }}"></script>
     <script>

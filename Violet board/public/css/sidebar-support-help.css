@@ -1,0 +1,355 @@
+/* ============================================================
+   SIDEBAR — inner layout (pins Support to the bottom)
+   ============================================================ */
+
+.sidebar-inner {
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+}
+
+.sidebar-support {
+
+    margin-top: auto;
+
+    padding-top: 12px;
+    margin-bottom: 4px;
+
+    border-top: 1px solid rgba(255,255,255,.15);
+}
+
+/* ============================================================
+   HELP POPUP
+   ============================================================ */
+
+.help-modal {
+
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 400;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.help-modal.show {
+
+    display: flex;
+}
+
+.help-modal-backdrop {
+
+    position: absolute;
+    inset: 0;
+
+    background: rgba(43,43,58,.55);
+}
+
+.help-modal-card {
+
+    position: relative;
+
+    width: 100%;
+    max-width: 480px;
+
+    max-height: 85vh;
+
+    overflow-y: auto;
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+}
+
+.help-modal-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+.help-modal-title {
+
+    font-family: var(--font-display);
+
+    font-size: 1.5rem;
+
+    font-weight: 600;
+
+    color: var(--color-text);
+}
+
+.help-modal-close {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    background: var(--color-teal-light);
+
+    border: none;
+
+    border-radius: 50%;
+
+    color: var(--color-text-muted);
+
+    cursor: pointer;
+
+    transition: .15s ease;
+}
+
+.help-modal-close:hover {
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+}
+
+.help-modal-body {
+
+    padding: 20px 24px 24px;
+}
+
+.help-search-wrap {
+
+    position: relative;
+
+    margin-bottom: 22px;
+}
+
+.help-search-wrap .search-icon {
+
+    left: 15px;
+}
+
+.help-search-input {
+
+    width: 100%;
+
+    height: 44px;
+
+    border: 1px solid transparent;
+
+    border-radius: var(--radius-full);
+
+    background: var(--color-teal-light);
+
+    padding: 0 16px 0 42px;
+
+    font-size: var(--text-sm);
+
+    color: var(--color-text);
+}
+
+.help-search-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.help-search-input:focus {
+
+    outline: none;
+
+    background: #ffffff;
+
+    border-color: var(--color-primary);
+
+    box-shadow: 0 0 0 4px rgba(124,58,237,.10);
+}
+
+.help-section-label {
+
+    font-size: var(--text-xs);
+
+    font-weight: 700;
+
+    letter-spacing: .06em;
+
+    text-transform: uppercase;
+
+    color: var(--color-text-muted);
+
+    margin-top: 18px;
+
+    margin-bottom: 10px;
+}
+
+.help-section-label:first-of-type {
+
+    margin-top: 0;
+}
+
+.help-copyright {
+
+    text-align: center;
+
+    font-size: var(--text-xs);
+
+    color: var(--color-text-muted);
+
+    margin: 16px 0 0;
+}
+
+.help-links {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    margin-bottom: 20px;
+}
+
+.help-link-item {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 9px 8px;
+
+    border-radius: var(--radius-md);
+
+    text-decoration: none;
+
+    color: var(--color-text);
+
+    font-size: var(--text-sm);
+
+    font-weight: 500;
+
+    transition: .15s ease;
+}
+
+.help-link-item:hover {
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+}
+
+.help-link-icon {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+
+    flex-shrink: 0;
+}
+
+.help-contact {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    background: var(--color-teal-light);
+
+    border-radius: var(--radius-md);
+
+    padding: 14px 16px;
+
+    margin-bottom: 18px;
+}
+
+.help-contact-row {
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: var(--text-sm);
+
+    color: var(--color-text);
+}
+
+.help-contact-row a {
+
+    color: var(--color-text);
+
+    text-decoration: none;
+}
+
+.help-contact-row a:hover {
+
+    color: var(--color-primary);
+
+    text-decoration: underline;
+}
+
+.help-modal-footer-links {
+
+    display: flex;
+
+    gap: 22px;
+}
+
+.help-modal-footer-link {
+
+    color: var(--color-primary);
+
+    font-weight: 600;
+
+    font-size: var(--text-sm);
+
+    text-decoration: none;
+}
+
+.help-modal-footer-links a.help-modal-footer-link:hover {
+
+    text-decoration: underline;
+}
+
+.help-modal-footer-link--inert {
+
+    cursor: default;
+
+    user-select: none;
+}
+
+/* ============================================================
+   HOME & SHOP — sharp edges
+   (scoped to these two pages only; every other page keeps the
+   rounded card style)
+   ============================================================ */
+
+body.page-home .product-card,
+body.page-home .home-hero,
+body.page-home .home-hero-eyebrow,
+body.page-home .category-tile,
+body.page-home .category-tile-icon,
+body.page-home .carousel-section,
+body.page-home .product-details,
+body.page-shop .product-details,
+body.page-shop .cart-counter,
+body.page-shop .shop-product-card .btn-primary {
+
+    border-radius: 0;
+}

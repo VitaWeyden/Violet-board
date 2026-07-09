@@ -1,15 +1,15 @@
 <nav class="navbar navbar-light fixed-top">
-    <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap px-3">
+    <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap px-3 gap-3">
 
-        {{-- Left: home + search --}}
-        <div class="d-flex align-items-center gap-2">
-            <a href="/" class="navbar-home-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-            </a>
-
+        {{-- Left: search --}}
+        <div class="d-flex align-items-center gap-2 flex-grow-1">
             <form action="{{ route('search') }}" method="GET" class="search-form-wrap">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m20 20-3.2-3.2"/>
+                    </svg>
+                </span>
                 <input
                     type="text"
                     name="query"
@@ -45,6 +45,8 @@
         {{-- Right: auth + icons --}}
         <div class="d-flex align-items-center gap-2">
 
+            <div class="navbar-divider d-none d-lg-block"></div>
+
             <div class="d-none d-lg-flex align-items-center gap-2">
                 @guest
                     <button class="btn-navbar-action btn-navbar-ghost" onclick="window.location.href='{{ route('login') }}'">Sign In / Register</button>
@@ -58,9 +60,10 @@
                             </svg>
                         </button>
                         <div class="navbar-user-menu">
-                            <span class="navbar-user-menu-item" style="cursor:default; opacity:0.6;">
+                            <div class="navbar-user-menu-name">
                                 {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-                            </span>
+                            </div>
+                            <div class="navbar-user-menu-divider"></div>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="navbar-user-menu-item">Sign Out</button>
@@ -129,15 +132,18 @@
     </div>
 </nav>
 
-<div id="mobileMenu" style="display:none; position:fixed; top:var(--navbar-height); left:0; right:0; z-index:199; background:linear-gradient(135deg,#8B5CF6 0%,#A78BFA 100%); padding:12px 16px 16px; border-top:1px solid rgba(255,255,255,0.2); flex-direction:column; gap:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+<div id="mobileMenu" style="display:none; position:fixed; top:var(--navbar-height); left:0; right:0; z-index:199; background:var(--color-surface); padding:12px 16px 16px; border-top:1px solid var(--color-border); flex-direction:column; gap:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
     <div class="d-flex flex-column gap-2">
-        <button class="btn btn-light w-100 text-start" onclick="window.location.href='{{ route('shop.favorites') }}'">❤ Favorites</button>
+        <button class="btn btn-light w-100 text-start d-flex align-items-center gap-2" onclick="window.location.href='{{ route('shop.favorites') }}'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            Favorites
+        </button>
         <button class="btn btn-light w-100 text-start" onclick="window.location.href='{{ route('shop.on-sale') }}'">On Sale</button>
         <button class="btn btn-light w-100 text-start" onclick="window.location.href='{{ route('shop.new') }}'">New Arrivals</button>
         <button class="btn btn-light w-100 text-start" onclick="window.location.href='{{ route('shop.bestsellers') }}'">Bestsellers</button>
     </div>
     @guest
-    <div class="d-flex flex-column gap-2 mt-2" style="border-top:1px solid rgba(255,255,255,0.2);padding-top:10px;">
+    <div class="d-flex flex-column gap-2 mt-2" style="border-top:1px solid var(--color-border);padding-top:10px;">
         <button class="btn-navbar-action btn-navbar-ghost w-100" onclick="window.location.href='{{ route('login') }}'">Sign In / Register</button>
     </div>
     @endguest

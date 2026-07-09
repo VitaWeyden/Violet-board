@@ -7,6 +7,7 @@ php artisan migrate --force
 if [ ! -f /var/www/.seed-marker/.seeded ]; then
   echo "Seeding database..."
   php artisan db:seed --force
+  mkdir -p /var/www/.seed-marker
   touch /var/www/.seed-marker/.seeded
   echo "Seeding complete."
 else

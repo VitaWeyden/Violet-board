@@ -1,0 +1,79 @@
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn-primary {
+
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+
+    border: none;
+
+    color: white;
+
+    border-radius: var(--radius-full);
+
+    font-family: var(--font-body);
+
+    font-weight: 600;
+
+    transition: .2s ease;
+}
+
+.btn-primary:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 16px rgba(109,40,217,0.35);
+
+    color: white;
+}
+
+.btn-dark {
+
+    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+
+    border: none;
+
+    color: white;
+
+    border-radius: var(--radius-full);
+
+    font-family: var(--font-body);
+
+    font-weight: 600;
+
+    transition: .2s ease;
+}
+
+.btn-dark:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 16px rgba(107,114,128,0.35);
+
+    color: white;
+}
+
+.btn-light {
+
+    background: transparent;
+
+    color: var(--color-text-muted);
+
+    border: none;
+
+    border-radius: var(--radius-full);
+
+    font-family: var(--font-body);
+
+    font-weight: 500;
+
+    transition: .2s ease;
+}
+
+.btn-light:hover {
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+}
