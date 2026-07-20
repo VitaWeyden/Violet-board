@@ -16,6 +16,9 @@ class ProductSeeder extends Seeder
     // Top N newest products (by id) get the New label
     private const NEW_COUNT = 15;
 
+    // Local placeholder box-art images (public/img/placeholders/box-01-front.svg, -back.svg, -contents.svg, ... up to box-12-*)
+    private const PLACEHOLDER_COUNT = 12;
+
     public function run(): void
     {
         $jsonPath = database_path('data/games.json');
@@ -61,10 +64,10 @@ class ProductSeeder extends Seeder
                 'in_stock'      => true,
             ]);
 
-            if (!empty($game['image_url'])) {
+            foreach ($this->placeholderImages($game['name']) as $url) {
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'url'        => $game['image_url'],
+                    'url'        => $url,
                 ]);
             }
 
@@ -87,6 +90,22 @@ class ProductSeeder extends Seeder
         $this->command->info("Done! Created: {$created}, Skipped: {$skipped}");
 
         $this->assignLabels();
+    }
+
+    // Deterministic pick: the same game name always gets the same palette,
+    // so re-seeding doesn't shuffle images around, but different games spread
+    // across the 12 palettes for visual variety. Each palette has 3 variants
+    // (front/back/contents), giving every product a small clickable gallery.
+    private function placeholderImages(string $name): array
+    {
+        $index = (crc32($name) % self::PLACEHOLDER_COUNT) + 1;
+        $slug  = sprintf('%02d', $index);
+
+        return [
+            asset("img/placeholders/box-{$slug}-front.svg"),
+            asset("img/placeholders/box-{$slug}-back.svg"),
+            asset("img/placeholders/box-{$slug}-contents.svg"),
+        ];
     }
 
     private function assignLabels(): void

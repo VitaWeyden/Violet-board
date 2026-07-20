@@ -1,0 +1,4 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#4a3f8c"/>
+<rect x="50" y="30" width="300" height="240" rx="18" fill="#6d5cb8" opacity="0.35"/><circle cx="140" cy="118" r="12" fill="#eee9ff"/><g transform="translate(91,92) rotate(8)"><polygon points="0,-14 12,10 -12,10" fill="#eee9ff"/></g><g transform="translate(116,97) rotate(60)"><rect x="-16" y="-11" width="32" height="22" rx="4" fill="#eee9ff"/></g><circle cx="257" cy="144" r="12" fill="#eee9ff"/><circle cx="310" cy="111" r="12" fill="#eee9ff"/><g transform="translate(190,142) rotate(318)"><polygon points="0,-14 12,10 -12,10" fill="#eee9ff"/></g><g transform="translate(250,136) rotate(209)"><rect x="-16" y="-11" width="32" height="22" rx="4" fill="#eee9ff"/></g><circle cx="209" cy="174" r="12" fill="#eee9ff"/><g transform="translate(156,106) rotate(291)"><rect x="-16" y="-11" width="32" height="22" rx="4" fill="#eee9ff"/></g>
+</svg>
