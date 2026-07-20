@@ -14,19 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/navbar-controls-modals.css') }}">
 </head>
 <body>
-    <nav class="navbar navbar-light fixed-top py-2 header">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a href="/" class="navbar-home-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-            </a>
-            <span class="fw-semibold fs-5" style="color:#ffffff">{{ $mode === 'login' ? 'Sign In' : 'Create Account' }}</span>
-            <div style="width:38px"></div>
-        </div>
-    </nav>
-
-    <div class="container" style="min-height:calc(100vh - var(--navbar-height));display:flex;align-items:center;justify-content:center;padding:32px 16px;">
+    <div class="container" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px;">
         <div class="col-md-5">
             <div class="bg-white rounded-xl shadow-lg p-5" style="border:1px solid var(--color-border);">
                 <h2 class="text-center fw-semibold mb-4" style="color:var(--color-primary);font-size:1.75rem">

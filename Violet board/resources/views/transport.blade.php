@@ -141,7 +141,7 @@
     @if($mode === 'box')
         <script src="{{ asset('js/boxcollect.js') }}"></script>
     @else
-        <script src="{{ asset('js/kurierska.js') }}"></script>
+        <script src="{{ asset('js/currier.js') }}"></script>
     @endif
 </body>
 </html>

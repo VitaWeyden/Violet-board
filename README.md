@@ -4,9 +4,7 @@
 
 ## About
 
-Violet Board is an ongoing project that originated as a university project at the Faculty of Informatics and Information Technologies in Bratislava.
-
-The project aims to simulate an e-commerce platform for board games. Both the frontend and backend are still under active development, and new features are being added continuously.
+Violet Board aims to simulate an e-commerce platform for board games, originated as a university project at the Faculty of Informatics and Information Technologies in Bratislava.
 
 ## Tech stack
 
@@ -18,20 +16,12 @@ The project aims to simulate an e-commerce platform for board games. Both the fr
 | Web server | Nginx |
 | Runtime | Docker / PHP-FPM |
 
-## Project Status
-
-🚧 Work in Progress
-
-The application is actively being developed. Features, data models, and user interface elements may change over time.
-
 ## Contributors
 
 The project is being developed by:
 - [Zsófia Gergely](https://github.com/VitaWeyden) - Full-Stack Development
 - [Flóra Emma Kaňuchová](https://github.com/knchflora) - Former Contributor in Full-Stack Development
 - [Bálint Janik](https://github.com/balintj4) - UX/UI Testing
-
----
 
 ## Requirements
 
@@ -40,6 +30,17 @@ Before you start, make sure you have the following installed:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Python 3](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/downloads)
+
+## Important Information
+
+* Game images are placeholder box-art graphics (generated locally, `public/img/placeholders/`) - each product gets 3 images (front/back/contents) assigned deterministically from 12 color palettes, so the image gallery on the product page has something to click through. They don't depict real games.
+* Game data is loaded from the `database/data/games.json` file during the seeding process.
+* Wishlist items and shopping cart contents are stored in the session for guest users and are automatically transferred to the user's account upon login.
+* Product prices are automatically generated during seeding based on the game's weight and do **not** represent real prices.
+* Box Collect locations are defined in the `config/box_collect_locations.php` file.
+* Discounts and the `New` / `Bestseller` labels are assigned to products during the seeding process.
+* Orders are stored in the database after checkout; however, no real payment gateway integration has been implemented.
+* The website can be browsed as a guest user, and products can be added to the cart or wishlist.
 
 ---
 
@@ -62,17 +63,7 @@ Create a new file called `.env` in the root of the project (the inner `Violet-bo
 
 > ⚠️ **Make sure Docker Desktop is open before running this script.** The script will not work if Docker Desktop is closed.
 
-Make sure you are inside the inner `Violet-board` folder (where `start.py` is located), then run the `start.py` python script:
-
-**On Windows:**
-```bash
-python start.py
-```
-
-**On Mac/Linux:**
-```bash
-python3 start.py
-```
+Make sure you are inside the inner `Violet-board` folder (where `start.py` is located), then run the `start.py` python script.
 
 This will automatically:
 - Build and start all Docker containers (app, nginx, database)

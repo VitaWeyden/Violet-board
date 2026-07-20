@@ -259,9 +259,9 @@
 
     width: 34px;
 
-    background: var(--color-teal-light);
+    background: #fee2e2;
 
-    color: var(--color-teal-dark);
+    color: var(--color-danger);
 
     border-left: 1px solid rgba(0,0,0,0.06);
 
@@ -424,7 +424,7 @@
 
     border: none;
 
-    color: var(--color-text-muted);
+    color: var(--color-danger);
 
     cursor: pointer;
 
