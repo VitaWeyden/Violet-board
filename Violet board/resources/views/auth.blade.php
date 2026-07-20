@@ -42,7 +42,7 @@
 
                 @if ($mode === 'login')
                     {{-- Sign in --}}
-                    <form method="POST" action="{{ route('login.submit') }}">
+                    <form method="POST" action="{{ route('login.submit') }}" novalidate>
                         @csrf
                         <div class="mb-3">
                             <label for="email" class="form-label fw-medium">Email</label>
@@ -56,7 +56,7 @@
                     </form>
                 @else
                     {{-- Register --}}
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" novalidate>
                         @csrf
                         <div class="mb-3">
                             <label class="form-label fw-medium">First Name</label>
